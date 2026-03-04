@@ -1,0 +1,8 @@
+teacher_id,teacher_name,subject,gender,salary,room
+T001,Mr. Dara Lim,Math,Male,1567.31,R101
+T002,Ms. Chenda Keo,Physics,Female,830.01,R102
+T003,Mr. Virak Pich,Chemistry,Male,1130.04,R103
+T004,Ms. Navy Heng,Biology,Female,1067.85,R104
+T005,Mr. Rith Yim,History,Male,1683.77,R105
+T006,Ms. Pisey Kong,Literature,Female,1612.04,R106
+T007,Mr. Chan Pen,English,Male,1870.62,R107
