@@ -1,0 +1,8 @@
+git clone your-project
+cd your-project
+python -m venv .venv              # create fresh venv
+.venv\Scripts\activate            # activate
+pip install -r requirements.txt  # install libraries
+pip install -e .                 # fix import paths
+
+python main.py                   # run

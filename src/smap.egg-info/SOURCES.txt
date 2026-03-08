@@ -1,0 +1,15 @@
+README.md
+pyproject.toml
+src/core/__init__.py
+src/core/person.py
+src/core/report.py
+src/database/data_manager.py
+src/model/student.py
+src/model/teacher.py
+src/report/annual.py
+src/report/class_report.py
+src/report/transcript_report.py
+src/smap.egg-info/PKG-INFO
+src/smap.egg-info/SOURCES.txt
+src/smap.egg-info/dependency_links.txt
+src/smap.egg-info/top_level.txt
