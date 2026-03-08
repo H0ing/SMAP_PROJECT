@@ -10,12 +10,15 @@ class Report(ABC):
     def title(self):
         return self.__title
 
-
+    @abstractmethod
+    def generate_report(self):
+        pass
 
     @abstractmethod
     def content_report(self):
         pass
-
+    
+    @abstractmethod
     def save_to_file(self, filepath):
         pass
 
