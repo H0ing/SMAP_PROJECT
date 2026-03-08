@@ -14,31 +14,26 @@ PASS_MARK = 50.0
 
 
 class Student(Person):
-    def __init__(self, name, person_id, gender, dob, email, class_level):
+    def __init__(self, name, person_id, gender, dob, email, class_id):
         super().__init__(name, person_id, gender)
-        self._class_level = class_level
-        self._dob = dob
-        self._email = email
-        self._score = {s: [] for s in SUBJECTS}
-        self._total_day = 0
-        self._attendance = 0
-
+        self._class_id=class_id
+        self._dob=dob
+        self._email=email
+        self._scores={s: [] for s in SUBJECTS}
+        self._total_day=0
+        self._attendance=0
     @property
-    def class_id(self):
-        return self.__class_id
-
+    def class_id(self): return self._class_id
     @class_id.setter
     def class_id(self, new_class_id):
         if not new_class_id:
             raise ValueError("Class id can not be empty!")
-        self.__class_id = new_class_id
-
+        self._class_id=new_class_id
     @property
     def attendance(self):
         if self._total_day == 0:
             return 0.0
-        return round(self.attendance / self._total_day * 100, 1)
-
+        return round(float(self._attendance/self._total_day*100),1)
     @property
     def dob(self):
         return self._dob
@@ -60,9 +55,7 @@ class Student(Person):
         self._email = new_email
 
     @property
-    def score(self):
-        return self._score
-
+    def score(self): return self._scores
     def set_attendance(self, day_present, total_day):
         try:
             if day_present < 0 or total_day <= 0 or day_present > total_day:
@@ -76,11 +69,11 @@ class Student(Person):
 
     def add_score(self, subject, score):
         try:
-            if subject not in self._score.keys():
+            if subject not in self._scores.keys():
                 raise ValueError(f"Unknown subject: {subject}")
-            if not (0 <= score <= 100):
-                raise ValueError(f"Score must be 0-100, got {score}")
-            self._score[subject].append(round(float(score), 1))
+            if not (0<= score <=100):
+                raise ValueError(f"Score must be 0-100, got {score}") 
+            self._scores[subject].append(round(float(score),1))
             print(f"Score added: {self.person_id} | {subject} | {score}")
         except ValueError as e:
             print(f"Add score failed: {e}")
@@ -134,7 +127,7 @@ class Student(Person):
             "gender": self.gender,
             "dob": self.dob,
             "email": self.email,
-            "class_id": self._class_level,
+            "class_id": self._class_id,
             "scores": self._scores,
             "attendance": self._attendance,
             "total_days": self._total_days,
