@@ -22,7 +22,12 @@ class Report(ABC):
 
 
   def save_to_file(self, filepath):
-    pass
+    try:
+      with open(filepath, "w", encoding="utf-8") as f:
+        f.write(self.to_text())
+        print(f"Report saved → {filepath}")
+    except OSError as e:
+      print(f"Failed to save report: {e}")
 
 
 

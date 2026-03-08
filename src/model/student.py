@@ -5,19 +5,19 @@ PASS_MARK  = 50.0
 class Student(Person):
     def __init__(self, name, person_id, gender, dob, email, class_level):
         super().__init__(name, person_id, gender)
-        self._class_level=class_level
+        self._class_id=class_level
         self._dob=dob
         self._email=email
         self._score={s: [] for s in SUBJECTS}
         self._total_day=0
         self._attendance=0
     @property
-    def class_id(self): return self.__class_id
+    def class_id(self): return self._class_id
     @class_id.setter
     def class_id(self, new_class_id):
         if not new_class_id:
             raise ValueError("Class id can not be empty!")
-        self.__class_id=new_class_id
+        self._class_id = new_class_id
         
     @property
     def attendance(self):
