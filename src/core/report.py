@@ -10,34 +10,7 @@ class Report(ABC):
     def title(self):
         return self.__title
 
-<<<<<<< HEAD
-  
-  @property
-  def title(self):
-    return self.__title
-  
-  @abstractmethod
-  def generate_report(self):
-    pass
 
-
-  @abstractmethod
-  def content_report(self):
-    pass
-
-
-  def save_to_file(self, filepath):
-    try:
-      with open(filepath, "w", encoding="utf-8") as f:
-        f.write(self.to_text())
-        print(f"Report saved → {filepath}")
-    except OSError as e:
-      print(f"Failed to save report: {e}")
-=======
-    @abstractmethod
-    def generate_report(self):
-        pass
->>>>>>> main
 
     @abstractmethod
     def content_report(self):
