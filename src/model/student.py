@@ -14,14 +14,13 @@ PASS_MARK = 50.0
 
 
 class Student(Person):
-    def __init__(self, name, person_id, gender, dob, email, class_id):
+    def __init__(self, name, person_id, gender, dob, email, class_id, attendance):
         super().__init__(name, person_id, gender)
         self._class_id=class_id
         self._dob=dob
         self._email=email
         self._scores={s: [] for s in SUBJECTS}
-        self._total_day=0
-        self._attendance=0
+        self._attendance=attendance
     @property
     def class_id(self): return self._class_id
     @class_id.setter
@@ -30,10 +29,7 @@ class Student(Person):
             raise ValueError("Class id can not be empty!")
         self._class_id=new_class_id
     @property
-    def attendance(self):
-        if self._total_day == 0:
-            return 0.0
-        return round(float(self._attendance/self._total_day*100),1)
+    def attendance(self): return self._attendance
     @property
     def dob(self):
         return self._dob
@@ -55,17 +51,8 @@ class Student(Person):
         self._email = new_email
 
     @property
-    def scores(self): return self._scores
-    def set_attendance(self, day_present, total_day):
-        try:
-            if day_present < 0 or total_day <= 0 or day_present > total_day:
-                raise ValueError("Invalid attendance value")
-            self._attendance = day_present
-            self._total_day = total_day
-        except ValueError as e:
-            print(f"set_attendance failed: {e}")
-        finally:
-            print("Process set attnedace already execute")
+    def scores(self): 
+        return self._scores
 
     def add_score(self, subject, score):
         try:
