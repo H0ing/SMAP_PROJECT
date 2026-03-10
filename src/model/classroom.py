@@ -14,6 +14,10 @@ class Classroom:
     @property
     def getClassId(self):
         return self._class_id
+    
+    @property
+    def class_level(self):
+        return self._class_level
 
     @getClassId.setter
     def setClassId(self, new_class_id):

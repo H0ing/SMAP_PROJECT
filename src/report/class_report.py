@@ -20,7 +20,7 @@ class ClassReport(Report):
 
         self._lines = [
             sep,
-            f"       CLASS REPORT — {cls.getClassId}",
+            f"       CLASS REPORT — {cls.getClassId} - {cls.class_level}",
             f"       Academic Year {cls._year}",
             sep,
             f"  Total Students  : {cls.len}",
@@ -59,6 +59,6 @@ if __name__ == '__main__':
     myStudent = Student("devit", "s002", "Male", "23/07/2006", "devit@gamil.com", "ci0007")
     demo = Classroom("ci001", "10a", "a001", "t004", 30, "2025-2026")
     demo.addStudent(myStudent)
-    print(demo.len)
+    # print(demo.len)
     test_report_class = ClassReport(demo)
     print(test_report_class.content_report())

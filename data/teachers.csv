@@ -1,8 +1,31 @@
 teacher_id,teacher_name,subject,gender,salary,room
-T001,Mr. Dara Lim,Math,Male,1567.31,R101
-T002,Ms. Chenda Keo,Physics,Female,830.01,R102
-T003,Mr. Virak Pich,Chemistry,Male,1130.04,R103
-T004,Ms. Navy Heng,Biology,Female,1067.85,R104
-T005,Mr. Rith Yim,History,Male,1683.77,R105
-T006,Ms. Pisey Kong,Literature,Female,1612.04,R106
-T007,Mr. Chan Pen,English,Male,1870.62,R107
+T001,Sokha Duch,Biology,Male,423.84,R102
+T002,Virak Phal,Mathematics,Male,972.82,R304
+T003,Bunna Pen,History,Female,1047.54,R102
+T004,Maly Mao,Chemistry,Female,524.38,R201
+T005,Eang Chan,Mathematics,Female,1078.0,R303
+T006,Theary Nget,Literature,Female,828.98,R201
+T007,Dara Tep,Literature,Female,861.88,R301
+T008,Bopha Phal,Chemistry,Male,1084.25,R104
+T009,Zara Ros,Literature,Female,530.12,R202
+T010,Piseth Phal,Literature,Male,887.3,R102
+T011,Zara Keo,Biology,Female,1191.62,R302
+T012,Bopha Kim,Mathematics,Male,1057.44,R204
+T013,Heng Phal,Physics,Female,570.1,R204
+T014,Chenda Hor,Physics,Female,511.7,R303
+T015,Maly Chan,Biology,Female,689.6,R104
+T016,Wathana Kim,Mathematics,Male,901.96,R304
+T017,Theary Sok,Biology,Female,876.71,R203
+T018,Davuth Keo,Literature,Male,945.37,R303
+T019,Chenda Ros,Mathematics,Female,747.81,R201
+T020,Farina Ty,History,Male,806.15,R103
+T021,Wathana Keo,History,Male,522.27,R101
+T022,Virak Chan,Biology,Male,489.49,R203
+T023,Davuth Seng,Physics,Male,468.52,R201
+T024,Bopha Ty,Physics,Male,927.8,R302
+T025,Bunna Nget,History,Female,1171.49,R302
+T026,Ratanak Tep,Biology,Female,750.48,R304
+T027,Vanna Tep,Physics,Male,670.47,R302
+T028,Maly Chan,Mathematics,Male,966.27,R102
+T029,Sreymom Seng,Chemistry,Male,811.32,R204
+T030,Sreymom Pov,Physics,Female,594.4,R204
