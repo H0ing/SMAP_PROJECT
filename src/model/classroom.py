@@ -22,7 +22,7 @@ class Classroom:
 
     @property
     def students(self):
-        return list(self.students)
+        return list(self._students)
 
     # add student
     def addStudent(self, student):
