@@ -20,7 +20,7 @@ class TranscriptReport(Report):
             f" Gender        : {s.gender}",
             f" Date of Birth : {s.dob}",
             f" Email         : {s.email}",
-            f" Attendance    : {s._attendance}/{s._total_day}  ({s.attendance}%)",
+            f" Attendance    : {s.attendance}%",
             sep,
             f"  {'Subject':<12} {'Avg':>10}  {'Grade':>7}  Status",
             "  "+line,
