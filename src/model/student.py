@@ -55,7 +55,7 @@ class Student(Person):
         self._email = new_email
 
     @property
-    def score(self): return self._scores
+    def scores(self): return self._scores
     def set_attendance(self, day_present, total_day):
         try:
             if day_present < 0 or total_day <= 0 or day_present > total_day:

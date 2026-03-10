@@ -15,6 +15,7 @@ class Classroom:
     def getClassId(self):
         return self._class_id
 
+    @getClassId.setter
     def setClassId(self, new_class_id):
         if new_class_id:
             self._class_id = new_class_id
@@ -22,7 +23,7 @@ class Classroom:
 
     @property
     def students(self):
-        return list(self._students)
+        return self._students
 
     # add student
     def addStudent(self, student):
@@ -79,7 +80,8 @@ class Classroom:
     # Magic methods
     def iter(self):
         return iter(self._students)
-
+    
+    @property
     def len(self):
         return len(self._students)
 
