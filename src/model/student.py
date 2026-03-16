@@ -88,15 +88,15 @@ class Student(Person):
         if score is None:
             score = self.overall_average()
         if score >= 90:
-            return "A+"
-        elif score >= 80:
             return "A"
-        elif score >= 70:
+        elif score >= 80:
             return "B"
-        elif score >= 60:
+        elif score >= 70:
             return "C"
-        elif score >= 50:
+        elif score >= 60:
             return "D"
+        elif score >= 50:
+            return "E"
         else:
             return "F"
 

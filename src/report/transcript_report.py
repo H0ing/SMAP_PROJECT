@@ -35,7 +35,7 @@ class TranscriptReport(Report):
             "  "+line,
             f"  Overall Average : {avg:.2f}",
             f"  Final Grade     : {s.grade_letter()}",
-            f"  Result          : {'✅ PASSED' if s.is_passing() else '❌ FAILED'}",
+            f"  Result          : {'PASSED' if s.is_passing() else ' FAILED'}",
         ]
         if fail_sub:
             self._lines.append(f"  Failing Subjects: {', '.join(sorted(fail_sub))}")
@@ -43,3 +43,13 @@ class TranscriptReport(Report):
         if not self._lines:
             self.generate_report()
         return "\n".join(self._lines)
+    def save_to_file(self, filepath):
+        if not self._lines:
+            self.generate_report()
+        with open(filepath, "w") as f:
+            f.write(self._lines)
+    
+    
+    
+
+        
