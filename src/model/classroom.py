@@ -102,4 +102,4 @@ if __name__ == "__main__":
     myStudent = Student("devit", "s002", "Male", "23/07/2006", "devit@gamil.com", "ci0007")
     demo = Classroom("ci001", "10a", "a001", "t004", 30, "2025-2026")
     demo.addStudent(myStudent)
-    print(demo.len())
+    print(demo.len)
