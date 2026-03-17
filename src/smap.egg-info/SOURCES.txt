@@ -4,6 +4,8 @@ src/core/__init__.py
 src/core/person.py
 src/core/report.py
 src/database/data_manager.py
+src/model/__init__.py
+src/model/classroom.py
 src/model/student.py
 src/model/teacher.py
 src/report/annual.py

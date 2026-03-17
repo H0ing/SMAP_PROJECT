@@ -2,8 +2,8 @@ from core.person import Person
 
 
 class Teacher(Person):
-    def __init__(self, name, teacher_id, gender, subject, salary, room):
-        super().__init__(name, teacher_id, gender)
+    def __init__(self, name, teacher_id, sex, subject, salary, room):
+        super().__init__(name, teacher_id, sex)
         self._subject = subject
         self._salary = salary
         self._room = room
@@ -47,8 +47,20 @@ class Teacher(Person):
         return {
             "teacher_id": self.teacher_id,
             "name": self.name,
-            "gender": self.gender,
+            "sex": self.sex,
             "subject": self._subject,
             "salary": self._salary,
             "room": self._room,
         }
+    
+    
+    @classmethod
+    def from_dict(cls, data):
+        return cls(
+            name=data["name"],
+            teacher_id=data["teacher_id"],
+            sex=data["sex"],
+            subject=data["subject"],
+            salary=float(data["salary"]),
+            room=data["room"]
+        )

@@ -17,7 +17,7 @@ class TranscriptReport(Report):
             f" Name          : {s.name}",
             f" Student ID    : {s.person_id}",
             f" Class         : {s.class_id}",
-            f" Gender        : {s.gender}",
+            f" Sex        : {s.sex}",
             f" Date of Birth : {s.dob}",
             f" Email         : {s.email}",
             f" Attendance    : {s.attendance}%",
