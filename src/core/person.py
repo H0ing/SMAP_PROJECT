@@ -3,10 +3,10 @@ from datetime import datetime
 
 
 class Person(ABC):
-    def __init__(self, name, person_id, gender):
+    def __init__(self, name, person_id, sex):
         self.__name = name
         self.__person_id = person_id
-        self.__gender = gender
+        self.__sex = sex
 
     @property
     def name(self):
@@ -29,14 +29,14 @@ class Person(ABC):
         self.__person_id = new_id
 
     @property
-    def gender(self):
-        return self.__gender
+    def sex(self):
+        return self.__sex
 
-    @gender.setter
-    def gender(self, new_value):
+    @sex.setter
+    def sex(self, new_value):
         if not new_value:
             raise ValueError("Gneder can not be empty")
-        self.__gender = new_value
+        self.__sex = new_value
 
     def __str__(self):
         return "f"
@@ -56,7 +56,7 @@ class Person(ABC):
         return {
             "id": self.__person_id,
             "name": self.__name,
-            "gneder": self.__gender,
+            "gneder": self.__sex,
             "dob": self.__dob,
             "email": self.__email,
         }

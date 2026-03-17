@@ -14,13 +14,16 @@ PASS_MARK = 50.0
 
 
 class Student(Person):
-    def __init__(self, name, person_id, gender, dob, email, class_id, attendance):
-        super().__init__(name, person_id, gender)
+    def __init__(self, name, person_id, sex, dob, email, class_id, attendance=0, scores = None):
+        super().__init__(name, person_id, sex)
         self._class_id=class_id
         self._dob=dob
         self._email=email
-        self._scores={s: [] for s in SUBJECTS}
         self._attendance=attendance
+        if scores is None:
+            self._scores = {s: [] for s in SUBJECTS}
+        else:
+            self._scores = {s: scores.get(s, []) for s in SUBJECTS}
     @property
     def class_id(self): return self._class_id
     @class_id.setter
@@ -105,19 +108,18 @@ class Student(Person):
         for subject in self._scores:
             if self._scores[subject] and self.subject_average(subject) < 50:
                 failing.append(subject)
-            return failing
+        return failing
 
     def to_dict(self):
         return {
             "student_id": self.person_id,
-            "name": self.name,
-            "gender": self.gender,
+            "student_name": self.name,   
+            "sex": self.sex,
             "dob": self.dob,
             "email": self.email,
             "class_id": self._class_id,
             "scores": self._scores,
             "attendance": self._attendance,
-            "total_days": self._total_days,
         }
 
     def __str__(self):
@@ -125,4 +127,17 @@ class Student(Person):
         return (
             f"Student({self.person_id}: {self.name} | "
             f"Class {self._class_id} | Avg {avg:.1f} {self.grade_letter()})"
+        )
+    
+    @classmethod
+    def from_dict(cls, data):
+        return cls(
+            name=data['student_name'],
+            person_id=data['student_id'],
+            sex=data['sex'],
+            dob=data['dob'],
+            email=data['email'],
+            class_id=data['class_id'],
+            attendance=data.get('attendance', 0),
+            scores=data.get('scores', {})
         )
