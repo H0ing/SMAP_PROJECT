@@ -55,7 +55,11 @@ class Student(Person):
     @property
     def scores(self): 
         return self._scores
-
+    @scores.setter
+    def scores(self, new_scores):
+        self._scores = new_scores
+        
+        
     def add_score(self, subject, score):
         try:
             if subject not in self._scores.keys():

@@ -34,12 +34,12 @@ class Classroom:
         if not isinstance(student, Student):
             raise TypeError("Only Student instances allowed")
         if student in self._students:
-            raise ValueError(f"Student {student.student_id} already in class")
+            raise ValueError(f"Student {student.person_id} already in class")
         self._students.append(student)  # otherwise append
 
     def remove_student(self, student_id):
         sizestudents = len(self._students)
-        self._students = [s for s in self._students if s.student_id != student_id]
+        self._students = [s for s in self._students if s.person_id != student_id]
         return (
             len(self._students) < sizestudents
         )  # true if remove student from the class succeed
@@ -69,8 +69,11 @@ class Classroom:
         return round(passed / len(self._students) * 100, 1)
 
     def subject_averages(self):
-        result = {}
-        for subject in SUBJECTS:
+        if not self._students:
+            return {}
+        subjects = list(self._students[0].scores.keys())
+        result ={}
+        for subject in subjects:
             scores = [
                 s.subject_average(subject)
                 for s in self._students
