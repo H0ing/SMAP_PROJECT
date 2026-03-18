@@ -21,6 +21,8 @@ class Student(Person):
         self._email=email
         self._attendance=attendance
         self._scores = scores
+
+           
     @property
     def class_id(self): return self._class_id
     @class_id.setter
@@ -138,5 +140,5 @@ class Student(Person):
             email=data['email'],
             class_id=data['class_id'],
             attendance=data.get('attendance', 0),
-            scores=data.get('scores', {})
+            scores= data.get('scores', {})
         )

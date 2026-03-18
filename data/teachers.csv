@@ -1,4 +1,4 @@
-teacher_id,teacher_name,subject,sex,salary,room
+teacher_id,name,subject,sex,salary,room
 T001,Sokha Duch,Biology,Male,423.84,R102
 T002,Virak Phal,Mathematics,Male,972.82,R304
 T003,Bunna Pen,History,Female,1047.54,R102
