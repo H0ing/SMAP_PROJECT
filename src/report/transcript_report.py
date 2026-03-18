@@ -1,7 +1,7 @@
 from core.report import Report
 from model.student import Student, SUBJECTS, PASS_MARK
 class TranscriptReport(Report):
-    def __init__(self,student : Student):
+    def __init__(self,student , ):
         super().__init__(f"Transcript - {student.name}")
         self._student=student
         self._lines=[]
@@ -12,30 +12,31 @@ class TranscriptReport(Report):
         self._lines=[
             sep,
             "        OFFICIAL STUDENT TRANSCRIPT",
-            "        Academic Year 2024–2025",
+            "        Academic Year 2024-2025",
             sep,
             f" Name          : {s.name}",
             f" Student ID    : {s.person_id}",
             f" Class         : {s.class_id}",
-            f" Sex        : {s.sex}",
+            f" Sex           : {s.sex}",
             f" Date of Birth : {s.dob}",
             f" Email         : {s.email}",
             f" Attendance    : {s.attendance}%",
             sep,
-            f"  {'Subject':<12} {'Avg':>10}  {'Grade':>7}  Status",
+            f"  {'Subject':<12} {'Avg':>7}  {'Grade':>10}  Status",
             "  "+line,
         ]
         for subject in SUBJECTS:
             avg=s.subject_average(subject)
-            grade=s.grade_letter()
+            grade=s.grade_letter(avg)
             status="PASS" if avg>= PASS_MARK else "FAIL"
             self._lines.append(f"  {subject:<12} {avg:>8} {grade:>6} {status:>9}")
         fail_sub=s.failing_subjects()
-        self._lines+=[
-            "  "+line,
-            f"  Overall Average : {avg:.2f}",
+        overall_avg = s.overall_average()  
+        self._lines += [
+            "  " + line,
+            f"  Overall Average : {overall_avg:.2f}",   
             f"  Final Grade     : {s.grade_letter()}",
-            f"  Result          : {'PASSED' if s.is_passing() else ' FAILED'}",
+            f"  Result          : {'PASSED' if s.is_passing() else 'FAILED'}",
         ]
         if fail_sub:
             self._lines.append(f"  Failing Subjects: {', '.join(sorted(fail_sub))}")
@@ -47,9 +48,52 @@ class TranscriptReport(Report):
         if not self._lines:
             self.generate_report()
         with open(filepath, "w") as f:
-            f.write(self._lines)
+            f.write("\n".join(self._lines))
+
+if __name__ == "__main__":
+    s = Student(
+        name="Devit",
+        person_id="S001",
+        class_id="A1",
+        sex="M",
+        dob="2005-01-01",
+        email="devit@test.com",
+        attendance=90
+    )
+    s.scores = {
+        "Math": [80, 90],
+        "English": [70, 75],
+        "Physics": [50, 60]
+    }
+    rpt = TranscriptReport(s)
+    rpt.generate_report()
+    print(rpt.content_report())
+    rpt.save_to_file("transcript_test.txt")
+    print("File saved as transcript_test.txt")
     
     
     
+    
+
+if __name__ == "__main__":
+    s = Student(
+        name="Devit",
+        person_id="S001",
+        class_id="A1",
+        sex="M",
+        dob="2005-01-01",
+        email="devit@test.com",
+        attendance=90
+    )
+    s.scores = {
+        "Math": [80, 90],
+        "English": [70, 75],
+        "Physics": [50, 60]
+    }
+    rpt = TranscriptReport(s)
+    rpt.generate_report()
+    print(rpt.content_report())
+    rpt.save_to_file("transcript_test.txt")
+    print("File saved as transcript_test.txt")
 
         
