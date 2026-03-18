@@ -69,8 +69,11 @@ class Classroom:
         return round(passed / len(self._students) * 100, 1)
 
     def subject_averages(self):
-        result = {}
-        for subject in SUBJECTS:
+        if not self._students:
+            return {}
+        subjects = list(self._students[0].scores.keys())
+        result ={}
+        for subject in subjects:
             scores = [
                 s.subject_average(subject)
                 for s in self._students

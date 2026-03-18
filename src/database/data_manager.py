@@ -235,7 +235,7 @@ class DataManager:
     
 
     def generate_class_report_plot(self, class_id):
-
+        
         import matplotlib
         matplotlib.use('Agg') 
         import matplotlib.pyplot as plt
@@ -307,6 +307,9 @@ class DataManager:
         plt.savefig(save_path, dpi=300)
 
         print(f"Saved to: {save_path}")
+        
+    def generate_annaul_report():
+        pass
     
     
 if __name__ == "__main__":
