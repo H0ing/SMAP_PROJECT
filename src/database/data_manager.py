@@ -73,15 +73,20 @@ class DataManager:
             with open(self.students_file, "r") as f:
                 reader = csv.DictReader(f)
                 for row in reader:
-                    row["attendance"] = int(row["attendance"])
+                    # print(row)
+                    row["attendance"] = float(row["attendance"])
                     row["scores"] = scores_container.get(row["student_id"], {})
+                    # print(row)
                     students.append(Student.from_dict(row))
+                    # print(Student.from_dict(row).scores)
         except FileNotFoundError:
             print("File student information not found")
         except Exception as e:
             print("Error loading student:" ,e)
         finally:
             print("Process load student information executed")
+
+        # print(scores_container)
         return students
     
     def save_student(self, students):
@@ -108,7 +113,9 @@ class DataManager:
             print("Error saving student:" ,e)
         finally:
             print("Process save student information executed")
+        
         scores_data = []
+
         for student in students:
             scores_data.append({
                 'student_id': student.student_id,
@@ -124,6 +131,8 @@ class DataManager:
             print("Error saving scores:" ,e)
         finally:
             print("Process saving score executed")
+
+
     def get_student(self, student_id):
         students = self.load_student()  
         for student in students:
@@ -197,6 +206,8 @@ class DataManager:
             print("Process loading file classroom executed") 
         
         return classrooms
+    
+    
     def generate_report(self, class_id):
         classroom = self.get_classroom(class_id)
         if not classroom:
@@ -222,14 +233,89 @@ class DataManager:
                 return classroom
         return None  
     
+
+    def generate_class_report_plot(self, class_id):
+
+        import matplotlib
+        matplotlib.use('Agg') 
+        import matplotlib.pyplot as plt
+        import os
+
+        # Get data 
+        report = self.generate_report(class_id)
+        students = self.find_students_by_class(class_id)
+
+        if not report or not students:
+            print("No data found for this class.")
+            return
+
+        subjects = list(report["subject_averages"].keys())
+        averages = list(report["subject_averages"].values())
+
+        student_names = [s.name for s in students]
+        student_avgs  = [s.overall_average() for s in students]
+
+        # Grade calculation 
+        def get_grade(avg):
+            if avg >= 90: return "A"
+            elif avg >= 80: return "B"
+            elif avg >= 70: return "C"
+            elif avg >= 60: return "D"
+            elif avg >= 50: return "E"
+            else: return "F"
+
+        grade_labels = ["A", "B", "C", "D", "E", "F"]
+        grade_counts = {g: 0 for g in grade_labels}
+
+        for avg in student_avgs:
+            grade_counts[get_grade(avg)] += 1
+
+        # Sort ranking 
+        paired = sorted(zip(student_avgs, student_names), reverse=True)
+        sorted_avgs  = [a for a, _ in paired]
+        sorted_names = [n for _, n in paired]
+
+        #  Create plots 
+        fig, axs = plt.subplots(3, 1, figsize=(10, 15))
+
+        # 1. Subject Averages
+        axs[0].barh(subjects, averages)
+        axs[0].set_title(f"Subject Averages — {class_id}")
+
+        # 2. Grade Distribution
+        counts = [grade_counts[g] for g in grade_labels]
+        axs[1].bar(grade_labels, counts)
+        axs[1].set_title(f"Grade Distribution — {class_id}")
+
+        # 3. Student Ranking
+        axs[2].barh(range(len(sorted_names)), sorted_avgs)
+        axs[2].set_yticks(range(len(sorted_names)))
+        axs[2].set_yticklabels([f"#{i+1} {n}" for i, n in enumerate(sorted_names)])
+        axs[2].invert_yaxis()
+        axs[2].set_title(f"Student Ranking — {class_id}")
+
+        plt.tight_layout()
+
+        # Save SMAP_DEVELOP/outputs/graphs/class/file_name.png
+        # Build correct path
+        save_dir = os.path.join("outputs", "graphs", "class")
+        os.makedirs(save_dir, exist_ok=True)  # create folder if not exists
+
+        file_name = f"class_report_{class_id}.png"
+        save_path = os.path.join(save_dir, file_name)
+
+        plt.savefig(save_path, dpi=300)
+
+        print(f"Saved to: {save_path}")
+    
     
 if __name__ == "__main__":
-    dm = DataManager(".\data")
+    dm = DataManager("./data")
 
     print("\n--- LOAD STUDENTS ---")
     students = dm.load_student()
     for s in students:
-        print(s.person_id, s.name, s.class_id)
+        print(s.person_id, s.name, s.class_id , s.scores)
 
     print("\n--- LOAD TEACHERS ---")
     teachers = dm.load_teacher()
@@ -242,13 +328,26 @@ if __name__ == "__main__":
         print(f"Class: {c.class_id}, Students: {c.len}")
 
     print("\n--- GENERATE REPORT ---")
-    report = dm.generate_report("10A")
+    report = dm.generate_report("C1A")
     print(report)
 
     print("\n--- FIND STUDENT ---")
     student = dm.get_student("S001")
     if student:
-        print(student.name)         
+        print(student.name)   
+
+    find_class_id = classrooms[0].class_id
+    find_student_in_class = classrooms[0].students
+    print(find_class_id)
+    for i in find_student_in_class:
+        print(i.scores)
+
+    dm.generate_class_report_plot("C1A")
+
+
+    
+
+          
                     
                 
                 
