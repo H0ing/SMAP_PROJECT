@@ -1,0 +1,25 @@
+==================================================
+        OFFICIAL STUDENT TRANSCRIPT
+        Academic Year 2024-2025
+==================================================
+ Name          : Devit
+ Student ID    : S001
+ Class         : A1
+ Sex           : M
+ Date of Birth : 2005-01-01
+ Email         : devit@test.com
+ Attendance    : 90%
+==================================================
+  Subject          Avg       Grade  Status
+  ---------------------------------------------
+  Math             85.0      B      PASS
+  Physics          55.0      E      PASS
+  Chemistry           0      F      FAIL
+  Biology             0      F      FAIL
+  History             0      F      FAIL
+  Literature          0      F      FAIL
+  English          72.5      C      PASS
+  ---------------------------------------------
+  Overall Average : 70.80
+  Final Grade     : C
+  Result          : PASSED
