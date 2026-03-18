@@ -1,6 +1,9 @@
 import os
 from database.data_manager import DataManager
 from model.student import Student
+from report.class_report import ClassReport
+from report.transcript_report import TranscriptReport
+from report.annual import Annual
 
 dm = DataManager("./data")
 
@@ -10,36 +13,53 @@ def clear_screen():
     else:
         _ = os.system('clear')
 
-def pause(text = "\nPress enter key ...."):
+def pause(text="\nPress enter key ...."):
     input(text)
 
+# ─────────────────────────────────────────────
+# Menu constants — [0] is always the LAST item
+# displayed as option 0 (back/exit)
+# ─────────────────────────────────────────────
+
 HOME_OPTION = [
-    "CRUD STUDENT OPERATION",
-    "VIEW CLASSROOM",
-    "VIEW TEACHER",
-    "GENERATE REPORT",
-    "GENERATE GRAPH",
-    "EXIT"
+    "CRUD STUDENT OPERATION",   # 1
+    "VIEW CLASSROOM",           # 2
+    "VIEW TEACHER",             # 3
+    "GENERATE REPORT",          # 4
+    "GENERATE GRAPH",           # 5
+    "EXIT"                      # 0
 ]
+
 GENERATE_REPORT_OPTION = [
-    "TRANSCRIPT REPORT",
-    "CLASS REPORT",
-    "ANNUAL REPORT",
-    "BACK TO HOME"
+    "TRANSCRIPT REPORT",        # 1
+    "CLASS REPORT",             # 2
+    "ANNUAL REPORT",            # 3
+    "BACK TO HOME"              # 0
 ]
+
 GENERATE_GRAPH_OPTION = [
-    "GRAPH TRANSCRIPT REPORT",
-    "GRAPH CLASS REPORT",
-    "GRAPH ANNUAL REPORT",
-    "BACK TO HOME"
+    "GRAPH TRANSCRIPT REPORT",  # 1
+    "GRAPH CLASS REPORT",       # 2
+    "GRAPH ANNUAL REPORT",      # 3
+    "BACK TO HOME"              # 0
 ]
+
 CRUD_OPTION_STUDENT = [
-    "VIEW STUDENT",
-    "UPDATE STUDENT",
-    "ADD STUDENT",
-    "DELETE STUDENT",
-    "BACK TO HOME"
+    "VIEW STUDENT",             # 1
+    "UPDATE STUDENT",           # 2
+    "ADD STUDENT",              # 3
+    "DELETE STUDENT",           # 4
+    "BACK TO HOME"              # 0
 ]
+
+UPDATE_FIELDS = {
+    "1": ("name",       "Full Name"),
+    "2": ("class_id",   "Class ID"),
+    "3": ("sex",        "Sex (M/F)"),
+    "4": ("dob",        "Date of Birth (YYYY-MM-DD)"),
+    "5": ("email",      "Email"),
+    "6": ("attendance", "Attendance %"),
+}
 
 # ─────────────────────────────────────────────
 # Display & validation helpers
@@ -171,15 +191,6 @@ def add_student():
 # UPDATE STUDENT
 # ─────────────────────────────────────────────
 
-UPDATE_FIELDS = {
-    "1": ("student_name", "Full Name"),
-    "2": ("class_id",     "Class ID"),
-    "3": ("sex",          "Sex (M/F)"),
-    "4": ("dob",          "Date of Birth (YYYY-MM-DD)"),
-    "5": ("email",        "Email"),
-    "6": ("attendance",   "Attendance %"),
-}
-
 def update_student():
     clear_screen()
     print("=" * 40)
@@ -252,12 +263,12 @@ def delete_student():
     print("\n  Student to delete:")
     print_student(student)
 
-    confirm = input(f"\n  Are you sure you want to delete '{student.student_name}'? (y/n): ").strip().lower()
+    confirm = input(f"\n  Are you sure you want to delete '{student.name}'? (y/n): ").strip().lower()
 
     if confirm == "y":
         success = dm.delete_student(student_id)
         if success:
-            print(f"  Student '{student.student_name}' deleted successfully!")
+            print(f"  Student '{student.name}' deleted successfully!")
         else:
             print("  Delete failed.")
     else:
@@ -271,7 +282,7 @@ def handle_crud_student():
     while True:
         clear_screen()
         display_option(CRUD_OPTION_STUDENT, "CRUD STUDENT OPERATION")
-        user_option = input(f"Choose option 0-{len(CRUD_OPTION_STUDENT) - 1} (0 = back): ")
+        user_option = input(f"Choose option 0-{len(CRUD_OPTION_STUDENT) - 1}: ")
 
         if not check_option(len(CRUD_OPTION_STUDENT), user_option):
             print("Wrong option")
@@ -280,15 +291,15 @@ def handle_crud_student():
 
         option = int(user_option)
 
-        if option == 0:
+        if option == 0:                  # BACK TO HOME
             break
-        elif option == 1:
+        elif option == 1:                # VIEW STUDENT
             view_student()
-        elif option == 2:
+        elif option == 2:                # UPDATE STUDENT
             update_student()
-        elif option == 3:
+        elif option == 3:                # ADD STUDENT
             add_student()
-        elif option == 4:
+        elif option == 4:                # DELETE STUDENT
             delete_student()
 
         pause()
@@ -301,7 +312,7 @@ def handle_generate_report():
     while True:
         clear_screen()
         display_option(GENERATE_REPORT_OPTION, "GENERATE REPORT")
-        user_option = input(f"Choose option 0-{len(GENERATE_REPORT_OPTION) - 1} (0 = back): ")
+        user_option = input(f"Choose option 0-{len(GENERATE_REPORT_OPTION) - 1}: ")
 
         if not check_option(len(GENERATE_REPORT_OPTION), user_option):
             print("Wrong option")
@@ -310,33 +321,46 @@ def handle_generate_report():
 
         option = int(user_option)
 
-        if option == 0:
+        if option == 0:                  # BACK TO HOME
             break
-        elif option == 1:
+
+        elif option == 1:                # TRANSCRIPT REPORT
             clear_screen()
-            print("[ TRANSCRIPT REPORT ] — Feature coming soon...")
-        elif option == 2:
+            student_id = input("  Enter Student ID: ").strip()
+            student = dm.get_student(student_id)
+            if not student:
+                print(f"  No student found with ID: {student_id}")
+            else:
+                report = TranscriptReport(student)
+                report.generate_report()
+                print(report.content_report())
+                if input("\n  Save to file? (y/n): ").strip().lower() == "y":
+                    report.save_to_file()
+
+        elif option == 2:                # CLASS REPORT
             clear_screen()
             class_id = input("  Enter Class ID: ").strip()
-            report = dm.generate_report(class_id)
-            if report:
-                print(f"\n  Class       : {report['class_id']}")
-                print(f"  Level       : {report['class_level']}")
-                print(f"  Students    : {report['student_count']}")
-                print(f"  Average     : {report['class_average']:.2f}")
-                print(f"  Pass Rate   : {report['pass_rate']:.2f}%")
-                print(f"  Failing     : {report['failing_count']}")
-                print(f"\n  Subject Averages:")
-                for subj, avg in report['subject_averages'].items():
-                    print(f"    {subj}: {avg:.2f}")
-                print(f"\n  Top 5 Students:")
-                for s in report['top_students']:
-                    print(f"    {s['name']} — {s['average']:.2f}")
+            classroom = dm.get_classroom(class_id)
+            if not classroom:
+                print(f"  No classroom found with ID: {class_id}")
             else:
-                print(f"  No data found for class: {class_id}")
-        elif option == 3:
+                report = ClassReport(classroom)
+                report.generate_report()
+                print(report.content_report())
+                if input("\n  Save to file? (y/n): ").strip().lower() == "y":
+                    report.save_to_file()
+
+        elif option == 3:                # ANNUAL REPORT
             clear_screen()
-            print("[ ANNUAL REPORT ] — Feature coming soon...")
+            classrooms = dm.load_classroom()
+            if not classrooms:
+                print("  No classroom data found.")
+            else:
+                report = Annual(classrooms)
+                report.generate_report()
+                print(report.content_report())
+                if input("\n  Save to file? (y/n): ").strip().lower() == "y":
+                    report.save_to_file()
 
         pause()
 
@@ -348,7 +372,7 @@ def handle_generate_graph():
     while True:
         clear_screen()
         display_option(GENERATE_GRAPH_OPTION, "GENERATE GRAPH")
-        user_option = input(f"Choose option 0-{len(GENERATE_GRAPH_OPTION) - 1} (0 = back): ")
+        user_option = input(f"Choose option 0-{len(GENERATE_GRAPH_OPTION) - 1}: ")
 
         if not check_option(len(GENERATE_GRAPH_OPTION), user_option):
             print("Wrong option")
@@ -357,19 +381,22 @@ def handle_generate_graph():
 
         option = int(user_option)
 
-        if option == 0:
+        if option == 0:                  # BACK TO HOME
             break
-        elif option == 1:
+
+        elif option == 1:                # GRAPH TRANSCRIPT REPORT
             clear_screen()
             print("[ GRAPH TRANSCRIPT REPORT ] — Feature coming soon...")
-        elif option == 2:
+
+        elif option == 2:                # GRAPH CLASS REPORT
             clear_screen()
             class_id = input("  Enter Class ID: ").strip()
             print(f"  Generating graph for class {class_id}...")
             dm.generate_class_report_plot(class_id)
-        elif option == 3:
+
+        elif option == 3:                # GRAPH ANNUAL REPORT
             clear_screen()
-            print("[ GRAPH ANNUAL REPORT ] -> Feature coming soon...")
+            print("[ GRAPH ANNUAL REPORT ] — Feature coming soon...")
 
         pause()
 
@@ -381,7 +408,7 @@ def main():
     while True:
         clear_screen()
         display_option(HOME_OPTION, "MAIN MENU")
-        user_option = input(f"Choose option 0-{len(HOME_OPTION) - 1} (0 = exit): ")
+        user_option = input(f"Choose option 0-{len(HOME_OPTION) - 1}: ")
 
         if not check_option(len(HOME_OPTION), user_option):
             print("Wrong option")
@@ -390,29 +417,34 @@ def main():
 
         option = int(user_option)
 
-        if option == 0:
+        if option == 0:                  # EXIT
             clear_screen()
             print("Goodbye!")
             break
-        elif option == 1:
+
+        elif option == 1:                # CRUD STUDENT OPERATION
             handle_crud_student()
-        elif option == 2:
+
+        elif option == 2:                # VIEW CLASSROOM
             clear_screen()
             print("[ VIEW CLASSROOM ]")
             classrooms = dm.load_classroom()
             for c in classrooms:
                 print(f"  {c.class_id} | Level: {c.class_level} | Room: {c.room} | Students: {c.len}")
             pause()
-        elif option == 3:
+
+        elif option == 3:                # VIEW TEACHER
             clear_screen()
             print("[ VIEW TEACHER ]")
             teachers = dm.load_teacher()
             for t in teachers:
                 print(f"  {t.teacher_id} | {t.name} | {t.subject} | Salary: {t.salary}")
             pause()
-        elif option == 4:
+
+        elif option == 4:                # GENERATE REPORT
             handle_generate_report()
-        elif option == 5:
+
+        elif option == 5:                # GENERATE GRAPH
             handle_generate_graph()
 
 if __name__ == "__main__":

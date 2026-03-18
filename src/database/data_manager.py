@@ -44,7 +44,7 @@ class DataManager:
     def get_teacher_by_id(self, teacher_id):
         teachers = self.load_teacher()
         for teacher in teachers:
-            if teacher.teacher_id == teacher_id:
+            if teacher.person_id == teacher_id:
                 return teacher
         return None
     def get_teacher_by_subject(self, subject):
@@ -93,8 +93,8 @@ class DataManager:
         csv_rows = []
         for student in students:
             csv_rows.append({
-                'student_id': student.student_id,
-                'student_name': student.student_name,
+                'student_id': student.person_id,
+                'student_name': student.name,
                 'class_id': student.class_id,
                 'sex': student.sex,
                 'dob': student.dob,
@@ -118,7 +118,7 @@ class DataManager:
 
         for student in students:
             scores_data.append({
-                'student_id': student.student_id,
+                'student_id': student.person_id,
                 'scores': student.scores
             })
         
@@ -153,12 +153,13 @@ class DataManager:
             if existing.person_id == student.person_id:
                 raise ValueError(f"Student ID {student.person_id} already exists")
         students.append(student)
+        # student.
         self.save_student(students)
     
     def update_student(self, student_id, updates):
         students = self.load_student()
         for student in students:
-            if student.student_id == student_id:
+            if student.person_id == student_id:
                 for key, value in updates.items():
                     if hasattr(student, key):
                         setattr(student, key, value)
@@ -168,7 +169,7 @@ class DataManager:
     def delete_student(self, student_id):
         students = self.load_student()
         original = len(students)
-        students = [s for s in students if s.student_id != student_id]
+        students = [s for s in students if s.person_id != student_id]
         if len(students) < original:
             self.save_student(students)
             return True
@@ -235,27 +236,21 @@ class DataManager:
     
 
     def generate_class_report_plot(self, class_id):
-        
         import matplotlib
-        matplotlib.use('Agg') 
+        matplotlib.use("Agg")
         import matplotlib.pyplot as plt
-        import os
-
-        # Get data 
-        report = self.generate_report(class_id)
-        students = self.find_students_by_class(class_id)
-
-        if not report or not students:
+ 
+        classroom = self.get_classroom(class_id)
+        if not classroom:
             print("No data found for this class.")
             return
-
-        subjects = list(report["subject_averages"].keys())
-        averages = list(report["subject_averages"].values())
-
-        student_names = [s.name for s in students]
-        student_avgs  = [s.overall_average() for s in students]
-
-        # Grade calculation 
+ 
+        students     = classroom.students
+        subj_avgs    = classroom.subject_averages()
+        subjects     = list(subj_avgs.keys())
+        averages     = list(subj_avgs.values())
+        student_avgs = [s.overall_average() for s in students]
+ 
         def get_grade(avg):
             if avg >= 90: return "A"
             elif avg >= 80: return "B"
@@ -263,51 +258,39 @@ class DataManager:
             elif avg >= 60: return "D"
             elif avg >= 50: return "E"
             else: return "F"
-
+ 
         grade_labels = ["A", "B", "C", "D", "E", "F"]
         grade_counts = {g: 0 for g in grade_labels}
-
         for avg in student_avgs:
             grade_counts[get_grade(avg)] += 1
-
-        # Sort ranking 
-        paired = sorted(zip(student_avgs, student_names), reverse=True)
+ 
+        paired       = sorted(zip(student_avgs, [s.name for s in students]), reverse=True)
         sorted_avgs  = [a for a, _ in paired]
         sorted_names = [n for _, n in paired]
-
-        #  Create plots 
+ 
         fig, axs = plt.subplots(3, 1, figsize=(10, 15))
-
-        # 1. Subject Averages
+ 
         axs[0].barh(subjects, averages)
         axs[0].set_title(f"Subject Averages — {class_id}")
-
-        # 2. Grade Distribution
-        counts = [grade_counts[g] for g in grade_labels]
-        axs[1].bar(grade_labels, counts)
+ 
+        axs[1].bar(grade_labels, [grade_counts[g] for g in grade_labels])
         axs[1].set_title(f"Grade Distribution — {class_id}")
-
-        # 3. Student Ranking
+ 
         axs[2].barh(range(len(sorted_names)), sorted_avgs)
         axs[2].set_yticks(range(len(sorted_names)))
         axs[2].set_yticklabels([f"#{i+1} {n}" for i, n in enumerate(sorted_names)])
         axs[2].invert_yaxis()
         axs[2].set_title(f"Student Ranking — {class_id}")
-
+ 
         plt.tight_layout()
-
-        # Save SMAP_DEVELOP/outputs/graphs/class/file_name.png
-        # Build correct path
-        save_dir = os.path.join("outputs", "graphs", "class")
-        os.makedirs(save_dir, exist_ok=True)  # create folder if not exists
-
-        file_name = f"class_report_{class_id}.png"
-        save_path = os.path.join(save_dir, file_name)
-
+ 
+        save_dir  = os.path.join("outputs", "graphs", "class")
+        os.makedirs(save_dir, exist_ok=True)
+        save_path = os.path.join(save_dir, f"class_report_{class_id}.png")
         plt.savefig(save_path, dpi=300)
-
         print(f"Saved to: {save_path}")
         
+
     def generate_annaul_report(self):
         import matplotlib
         matplotlib.use('Agg') 

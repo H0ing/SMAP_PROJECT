@@ -66,22 +66,6 @@ class Annual(Report):
             self.generate_report()
         return "\n".join(self._lines)
 
-<<<<<<< HEAD
-    def save_to_file(self):
-        base_dir     = os.path.dirname(os.path.abspath(__file__))       # .../src/report
-        project_root = os.path.dirname(os.path.dirname(base_dir))       # .../SMAP_DEVELOP
-        file_path    = os.path.join(
-            project_root, "outputs", "report", "annual",
-            "annual_report_2024_2025.txt"
-        )
- 
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
- 
-        with open(file_path, "w") as f:
-            f.write(self.content_report())
- 
-        print(f"Annual Report saved → {file_path}")
-=======
     def save_to_file(self, filepath=None):
         import os
         years = sorted(set(c._year for c in self._classrooms if c._year))
@@ -95,7 +79,6 @@ class Annual(Report):
         with open(filepath, "w", encoding="utf-8") as f:
             f.write(content)
         print(f"Annual report saved to: {filepath}")
->>>>>>> aec3817c35afbec419eb4dfa61f9aa673b2abd36
 
 
 if __name__ == '__main__':
