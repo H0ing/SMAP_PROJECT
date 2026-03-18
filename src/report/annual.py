@@ -1,7 +1,7 @@
 from core.report import Report
 from model.student import Student
 from model.classroom import Classroom
-
+import os
 
 class Annual(Report):
     def __init__(self, classrooms):
@@ -61,8 +61,20 @@ class Annual(Report):
             self.generate_report()
         return "\n".join(self._lines)
 
-    def save_to_file(self, file_path):  # properly indented inside class
-        pass
+    def save_to_file(self):
+        base_dir     = os.path.dirname(os.path.abspath(__file__))       # .../src/report
+        project_root = os.path.dirname(os.path.dirname(base_dir))       # .../SMAP_DEVELOP
+        file_path    = os.path.join(
+            project_root, "outputs", "report", "annual",
+            "annual_report_2024_2025.txt"
+        )
+ 
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+ 
+        with open(file_path, "w") as f:
+            f.write(self.content_report())
+ 
+        print(f"Annual Report saved → {file_path}")
 
 
 if __name__ == '__main__':

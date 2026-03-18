@@ -1,5 +1,7 @@
 from core.report import Report
 from model.student import Student, SUBJECTS, PASS_MARK
+import os
+
 class TranscriptReport(Report):
     def __init__(self,student : Student):
         super().__init__(f"Transcript - {student.name}")
@@ -43,11 +45,24 @@ class TranscriptReport(Report):
         if not self._lines:
             self.generate_report()
         return "\n".join(self._lines)
-    def save_to_file(self, filepath):
-        if not self._lines:
-            self.generate_report()
-        with open(filepath, "w") as f:
-            f.write(self._lines)
+    
+    def save_to_file(self):
+        student_id = self._student.person_id
+        class_id   = self._student.class_id
+ 
+        base_dir     = os.path.dirname(os.path.abspath(__file__))       # .../src/report
+        project_root = os.path.dirname(os.path.dirname(base_dir))       # .../SMAP_DEVELOP
+        file_path    = os.path.join(
+            project_root, "outputs", "report", "transcript",
+            f"{student_id}_{class_id}.txt"
+        )
+ 
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+ 
+        with open(file_path, "w") as f:
+            f.write(self.content_report())
+ 
+        print(f"Transcript saved → {file_path}")
     
     
     

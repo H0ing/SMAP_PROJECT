@@ -145,13 +145,13 @@ class DataManager:
     def find_students_by_name(self, name):
         students = self.load_student()
         name_lower = name.lower()
-        return [s for s in students if name_lower in s.student_name.lower()]
+        return [s for s in students if name_lower in s.name.lower()]
     
     def add_student(self, student):
         students = self.load_student()
         for existing in students:
-            if existing.student_id == student.student_id:
-                raise ValueError(f"Student ID {student.student_id} already exists")
+            if existing.person_id == student.person_id:
+                raise ValueError(f"Student ID {student.person_id} already exists")
         students.append(student)
         self.save_student(students)
     
