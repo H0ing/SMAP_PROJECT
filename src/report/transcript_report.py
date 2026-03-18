@@ -70,30 +70,3 @@ if __name__ == "__main__":
     print(rpt.content_report())
     rpt.save_to_file("transcript_test.txt")
     print("File saved as transcript_test.txt")
-    
-    
-    
-    
-
-if __name__ == "__main__":
-    s = Student(
-        name="Devit",
-        person_id="S001",
-        class_id="A1",
-        sex="M",
-        dob="2005-01-01",
-        email="devit@test.com",
-        attendance=90
-    )
-    s.scores = {
-        "Math": [80, 90],
-        "English": [70, 75],
-        "Physics": [50, 60]
-    }
-    rpt = TranscriptReport(s)
-    rpt.generate_report()
-    print(rpt.content_report())
-    rpt.save_to_file("transcript_test.txt")
-    print("File saved as transcript_test.txt")
-
-        
