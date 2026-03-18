@@ -27,6 +27,8 @@ class DataManager:
         finally:
             print("Process load teacher file executed!")
         return teachers
+    
+    
     def save_teacher(self, teachers):
         try:
             with open(self.teachers_file , "w", newline='') as f:
@@ -175,26 +177,28 @@ class DataManager:
             return True
         return False
     
-    def load_classroom(self):
+    def load_classroom(self, year=None):
         students = self.load_student()
         teachers = self.load_teacher()
-        teachers_by_id = {}
-        for t in teachers:
-            teachers_by_id[t.person_id] = t
-        
+        teachers_by_id = {t.person_id: t for t in teachers}
+ 
         classrooms = []
         try:
-            with open(self.rooms_file, 'r') as f:
+            with open(self.rooms_file, "r") as f:
                 reads = csv.DictReader(f)
                 for row in reads:
-                    class_id = row['class_id']
-                    class_level = row['class_level']
-                    room = row['room']
-                    capacity = int(row["capacity"])
-                    year = row['year']
-                    teacher_id = row['homeroom_teacher']
-                    teacher = teachers_by_id.get(teacher_id)
-                    classroom = Classroom(class_id, class_level, room, teacher, capacity, year)
+                    class_id    = row["class_id"]
+                    class_level = row["class_level"]
+                    room        = row["room"]
+                    capacity    = int(row["capacity"])
+                    row_year    = row["year"]
+                    teacher     = teachers_by_id.get(row["homeroom_teacher"])
+ 
+                    # skip classrooms not in the requested year
+                    if year and row_year != year:
+                        continue
+ 
+                    classroom = Classroom(class_id, class_level, room, teacher, capacity, row_year)
                     for student in students:
                         if student.class_id == class_id:
                             classroom.add_student(student)
@@ -204,28 +208,12 @@ class DataManager:
         except Exception as e:
             print("Error loading file classroom:", e)
         finally:
-            print("Process loading file classroom executed") 
-        
+            print("Process loading file classroom executed")
+ 
         return classrooms
     
     
-    def generate_report(self, class_id):
-        classroom = self.get_classroom(class_id)
-        if not classroom:
-            return None   
-        return {
-            'class_id': classroom.class_id,
-            'class_level': classroom.class_level,
-            'student_count': classroom.len,
-            'class_average': classroom.class_average(),
-            'pass_rate': classroom.pass_rate(),
-            'subject_averages': classroom.subject_averages(),
-            'top_students': [
-                {'id': s.person_id, 'name': s.name, 'average': s.overall_average()}
-                for s in classroom.top_students(5)
-            ],
-            'failing_count': len(classroom.failing_students())
-        }
+    
     
     def get_classroom(self, class_id):
         classrooms = self.load_classroom()
@@ -233,6 +221,24 @@ class DataManager:
             if classroom.class_id == class_id:
                 return classroom
         return None  
+    
+
+
+    def get_available_years(self):
+        """Return sorted list of all unique academic years from rooms.csv."""
+        years = set()
+        try:
+            with open(self.rooms_file, "r") as f:
+                for row in csv.DictReader(f):
+                    if row.get("year"):
+                        years.add(row["year"].strip())
+        except Exception as e:
+            print("Error reading years:", e)
+        return sorted(years)
+ 
+    def load_classroom_by_year(self, year):
+        """Return only classrooms that belong to the given academic year."""
+        return [c for c in self.load_classroom() if c._year == year]
     
 
     def generate_class_report_plot(self, class_id):
@@ -289,66 +295,72 @@ class DataManager:
         save_path = os.path.join(save_dir, f"class_report_{class_id}.png")
         plt.savefig(save_path, dpi=300)
         print(f"Saved to: {save_path}")
-        
-
-    def generate_annaul_report(self):
+ 
+    def generate_annaul_report_plot(self, year=None):
         import matplotlib
-        matplotlib.use('Agg') 
+        matplotlib.use('Agg')
         import matplotlib.pyplot as plt
-        import os
-       
-        classrooms=self.load_classroom()
+        from collections import defaultdict
+ 
+        classrooms = self.load_classroom_by_year(year) if year else self.load_classroom()
         if not classrooms:
             print("No classrooms found.")
             return
-        all_students=[s for c in classrooms for s in c.students]
+ 
+        all_students = [s for c in classrooms for s in c.students]
         if not all_students:
             print("No student found.")
             return
-        subjects = list(all_students[0].scores.keys()) if all_students else []
+ 
         active_classes = [c for c in classrooms if c.students]
-            # Chart 1: group classes by year, find highest avg class per year
-        from collections import defaultdict
-        classes_by_year = defaultdict(list)
+ 
+        # Chart 1: best class per grade level (e.g. 7A, 8B, 9A...)
+        classes_by_level = defaultdict(list)
         for c in active_classes:
-            classes_by_year[c._year].append(c)
-
-        year_labels    = []   # x axis — each year
-        top_class_avgs = []   # y axis — highest class avg that year
-        top_class_ids  = []   # label — which class was the best
-        for year,classes in sorted(classes_by_year.items()):
-            best=max(classes,key=lambda c: c.class_average())
-            year_labels.append(year)
+            classes_by_level[c.class_level].append(c)
+ 
+        level_labels   = []
+        top_class_avgs = []
+        top_class_ids  = []
+        for level, classes in sorted(classes_by_level.items()):
+            best = max(classes, key=lambda c: c.class_average())
+            level_labels.append(level)
             top_class_avgs.append(best.class_average())
             top_class_ids.append(best.class_id)
-        # chart 2 top performer per class
+ 
+        # Chart 2: top student per class (within the selected year)
         top_scores = []
         top_labels = []
-        for c in active_classes:
-            top = max(c.students,key=lambda s:s.overall_average())
+        for c in sorted(active_classes, key=lambda c: c.class_level):
+            top = max(c.students, key=lambda s: s.overall_average())
             top_scores.append(top.overall_average())
-            top_labels.append(f"{c.class_id}-{top.name}")
-        #chart 3 grade distribution school-wide
+            top_labels.append(f"{c.class_id} {c.class_level} - {top.name}")
+ 
+        # Chart 3: grade distribution school-wide
         grade_labels = ["A", "B", "C", "D", "E", "F"]
         grade_counts = {g: 0 for g in grade_labels}
         for s in all_students:
             grade_counts[s.grade_letter()] += 1
-        
-        #implement and figure all plots
-        fig, axs = plt.subplots(3,1, figsize=(12,18))
-        fig.suptitle("Annual School Report — 2024/2025", fontsize=15, fontweight="bold")
-        #chart 1 highest class per year
-        axs[0].bar(year_labels, top_class_avgs,
-               color=[self._score_color(v) for v in top_class_avgs])
+ 
+        title_label  = year if year else "All Years"
+        chart2_height = max(6, len(active_classes) * 0.4)
+ 
+        fig, axs = plt.subplots(3, 1, figsize=(12, 12 + chart2_height))
+        fig.suptitle(f"Annual School Report — {title_label}", fontsize=15, fontweight="bold")
+ 
+        # Chart 1: best class per grade level
+        axs[0].bar(level_labels, top_class_avgs,
+                   color=[self._score_color(v) for v in top_class_avgs])
         axs[0].set_ylim(0, 100)
-        axs[0].set_title("Highest Performing Class per Year")
+        axs[0].set_title("Best Class per Grade Level")
         axs[0].set_ylabel("Average Score")
         axs[0].axhline(y=50, color="red", linestyle="--", label="Pass Mark")
         axs[0].legend()
-        # Label each bar with class ID and score
         for i, (v, cid) in enumerate(zip(top_class_avgs, top_class_ids)):
-            axs[0].text(i, v + 1, f"{cid}\n{v:.1f}", ha="center", fontsize=9, fontweight="bold")
-        # ── Chart 2: Top performer per class (horizontal bar) ─────────────────
+            axs[0].text(i, v + 1, f"{v:.1f}", ha="center", va="bottom", fontsize=8, fontweight="bold")
+            axs[0].text(i, v / 2, cid, ha="center", va="center", fontsize=8, fontweight="bold", color="white", rotation=90)
+ 
+        # Chart 2: top student per class
         axs[1].barh(range(len(top_labels)), top_scores,
                     color=[self._score_color(v) for v in top_scores])
         axs[1].set_yticks(range(len(top_labels)))
@@ -357,13 +369,13 @@ class DataManager:
         axs[1].axvline(x=50, color="red",   linestyle="--", label="Pass Mark")
         axs[1].axvline(x=70, color="green", linestyle=":",  label="Good (70)")
         axs[1].set_xlim(0, 100)
-        axs[1].set_title("Top Performer per Class")
+        axs[1].set_title("Top Student per Class")
         axs[1].set_xlabel("Overall Average Score")
         axs[1].legend()
         for i, v in enumerate(top_scores):
             axs[1].text(v + 1, i, f"{v:.1f}", va="center", fontsize=8, fontweight="bold")
-
-        # ── Chart 3: Grade distribution (vertical bar) ────────────────────────
+ 
+        # Chart 3: grade distribution
         counts     = [grade_counts[g] for g in grade_labels]
         grd_colors = ["#2ecc71", "#27ae60", "#f1c40f", "#e67e22", "#e74c3c", "#c0392b"]
         axs[2].bar(grade_labels, counts, color=grd_colors)
@@ -372,36 +384,27 @@ class DataManager:
         for i, c in enumerate(counts):
             if c > 0:
                 axs[2].text(i, c + 0.1, str(c), ha="center", fontsize=9, fontweight="bold")
-        # check student make sure graph is corrected by meng seang
-        # total = 0
-        # for c in classrooms:
-        #     print(f"\n--- {c.class_id} ({len(c.students)} students) ---")
-        #     print(f"  {'ID':<10} {'Name':<22} {'Avg':>6} {'Grade'}")
-        #     print(f"  {'-'*45}")
-        #     for s in c.students:
-        #         avg = s.overall_average()
-        #         grade = s.grade_letter()
-        #         print(f"  {s.person_id:<10} {s.name:<22} {avg:>6.1f} {grade}")
-        #     total += len(c.students)       
-        # print(f"\n{'='*45}")
-        # print(f"Total: {total} students across {len(classrooms)} classes")
+ 
         plt.tight_layout()
-        return self._save_plot(plt, "annual", "annual_report.png") 
+ 
+        filename = f"annual_report_{year.replace('-', '_')}.png" if year else "annual_report_all.png"
+        return self._save_plot(plt, "annual", filename)
+ 
     def _score_color(self, value):
         if value >= 70:
             return "green"
         elif value >= 50:
             return "orange"
-        return "red"      
+        return "red"
+ 
     def _save_plot(self, plt, folder, filename):
-        import os
         save_dir = os.path.join("outputs", "graphs", folder)
         os.makedirs(save_dir, exist_ok=True)
         path = os.path.join(save_dir, filename)
         plt.savefig(path, dpi=300, bbox_inches="tight")
         plt.close()
         print(f"Saved to: {path}")
-        return path     
+        return path
         
 if __name__ == "__main__":
     dm = DataManager("./data")
@@ -421,12 +424,9 @@ if __name__ == "__main__":
     for c in classrooms:
         print(f"Class: {c.class_id}, Students: {c.len}")
 
-    print("\n--- GENERATE REPORT ---")
-    report = dm.generate_report("C1A")
-    print(report)
 
     print("\n--- FIND STUDENT ---")
-    student = dm.get_student("S001")
+    student = dm.get_student("STU001")
     if student:
         print(student.name)   
 
@@ -436,8 +436,8 @@ if __name__ == "__main__":
     for i in find_student_in_class:
         print(i.scores)
 
-    dm.generate_class_report_plot("C1A")
-    dm.generate_annaul_report()
+    dm.generate_class_report_plot("CLS0482")
+    dm.generate_annaul_report_plot("2020-2021")
 
 
     

@@ -1,6 +1,6 @@
 import os
 from database.data_manager import DataManager
-from model.student import Student
+from model.student import Student, SUBJECTS
 from report.class_report import ClassReport
 from report.transcript_report import TranscriptReport
 from report.annual import Annual
@@ -16,10 +16,10 @@ def clear_screen():
 def pause(text="\nPress enter key ...."):
     input(text)
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 # Menu constants — [0] is always the LAST item
 # displayed as option 0 (back/exit)
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 
 HOME_OPTION = [
     "CRUD STUDENT OPERATION",   # 1
@@ -49,6 +49,7 @@ CRUD_OPTION_STUDENT = [
     "UPDATE STUDENT",           # 2
     "ADD STUDENT",              # 3
     "DELETE STUDENT",           # 4
+    "ADD SCORE",                # 5
     "BACK TO HOME"              # 0
 ]
 
@@ -61,9 +62,9 @@ UPDATE_FIELDS = {
     "6": ("attendance", "Attendance %"),
 }
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 # Display & validation helpers
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 
 def display_option(option_menu, title="MENU"):
     print(f"\n{'='*40}")
@@ -89,9 +90,24 @@ def print_student(student):
     print(f"  Attend.  : {student.attendance}")
     print(f"{'─'*40}")
 
-# ─────────────────────────────────────────────
+def pick_year():
+    years = dm.get_available_years()
+    if not years:
+        print("  No academic years found.")
+        return None
+    print("\n  Available Academic Years:")
+    for i, y in enumerate(years, 1):
+        print(f"  [{i}] {y}")
+    print("─" * 40)
+    choice = input("  Choose year number: ").strip()
+    if not choice.isdigit() or not (1 <= int(choice) <= len(years)):
+        print("  Invalid choice.")
+        return None
+    return years[int(choice) - 1]
+
+# ---------------------------------------------
 # VIEW STUDENT
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 
 def view_student():
     clear_screen()
@@ -145,9 +161,9 @@ def view_student():
     else:
         print("  Invalid option.")
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 # ADD STUDENT
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 
 def add_student():
     clear_screen()
@@ -187,9 +203,9 @@ def add_student():
     except ValueError as e:
         print(f"\n  Error: {e}")
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 # UPDATE STUDENT
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 
 def update_student():
     clear_screen()
@@ -243,9 +259,9 @@ def update_student():
     else:
         print(f"  Failed to update student {student_id}.")
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 # DELETE STUDENT
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 
 def delete_student():
     clear_screen()
@@ -274,9 +290,59 @@ def delete_student():
     else:
         print("  Delete cancelled.")
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
+# ADD SCORE
+# ---------------------------------------------
+
+def add_score_student():
+    clear_screen()
+    print("=" * 40)
+    print("  ADD SCORE")
+    print("=" * 40)
+
+    student_id = input("  Enter Student ID: ").strip()
+    student = dm.get_student(student_id)
+
+    if not student:
+        print(f"  No student found with ID: {student_id}")
+        return
+
+    print_student(student)
+
+    print("\n  Select Subject:")
+    for i, subj in enumerate(SUBJECTS, 1):
+        print(f"  [{i}] {subj}")
+    print("─" * 40)
+
+    subj_choice = input("  Choose subject number: ").strip()
+    if not subj_choice.isdigit() or not (1 <= int(subj_choice) <= len(SUBJECTS)):
+        print("  Invalid subject choice.")
+        return
+
+    subject = SUBJECTS[int(subj_choice) - 1]
+
+    while True:
+        score_input = input(f"  Enter score for {subject} (0-100): ").strip()
+        try:
+            score = float(score_input)
+            if not (0 <= score <= 100):
+                print("  Score must be between 0 and 100.")
+                continue
+            break
+        except ValueError:
+            print("  Invalid input. Score must be a number.")
+
+    student.add_score(subject, score)
+    success = dm.update_student(student.person_id, {"scores": student.scores})
+    if success:
+        print(f"\n  Score saved successfully!")
+        print(f"  {student.name} | {subject} | {score}")
+    else:
+        print("  Failed to save score.")
+
+# ---------------------------------------------
 # CRUD Student sub-menu
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 
 def handle_crud_student():
     while True:
@@ -301,12 +367,14 @@ def handle_crud_student():
             add_student()
         elif option == 4:                # DELETE STUDENT
             delete_student()
+        elif option == 5:                # ADD SCORE
+            add_score_student()
 
         pause()
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 # Generate Report sub-menu
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 
 def handle_generate_report():
     while True:
@@ -352,11 +420,15 @@ def handle_generate_report():
 
         elif option == 3:                # ANNUAL REPORT
             clear_screen()
-            classrooms = dm.load_classroom()
+            year = pick_year()
+            if not year:
+                pause()
+                continue
+            classrooms = dm.load_classroom_by_year(year)
             if not classrooms:
-                print("  No classroom data found.")
+                print(f"  No data found for year: {year}")
             else:
-                report = Annual(classrooms)
+                report = Annual(classrooms, year=year)
                 report.generate_report()
                 print(report.content_report())
                 if input("\n  Save to file? (y/n): ").strip().lower() == "y":
@@ -364,9 +436,9 @@ def handle_generate_report():
 
         pause()
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 # Generate Graph sub-menu
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 
 def handle_generate_graph():
     while True:
@@ -386,7 +458,9 @@ def handle_generate_graph():
 
         elif option == 1:                # GRAPH TRANSCRIPT REPORT
             clear_screen()
-            print("[ GRAPH TRANSCRIPT REPORT ] — Feature coming soon...")
+            student_id = input("  Enter Student ID: ").strip()
+            print(f"  Generating transcript graph for {student_id}...")
+            dm.generate_transcript_plot(student_id)
 
         elif option == 2:                # GRAPH CLASS REPORT
             clear_screen()
@@ -396,13 +470,18 @@ def handle_generate_graph():
 
         elif option == 3:                # GRAPH ANNUAL REPORT
             clear_screen()
-            print("[ GRAPH ANNUAL REPORT ] — Feature coming soon...")
+            year = pick_year()
+            if not year:
+                pause()
+                continue
+            print(f"  Generating annual graph for {year}...")
+            dm.generate_annaul_report_plot(year)
 
         pause()
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 # Home menu
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 
 def main():
     while True:
@@ -430,7 +509,7 @@ def main():
             print("[ VIEW CLASSROOM ]")
             classrooms = dm.load_classroom()
             for c in classrooms:
-                print(f"  {c.class_id} | Level: {c.class_level} | Room: {c.room} | Students: {c.len}")
+                print(f"  {c.class_id} | Level: {c.class_level:<10} | Room: {c.room:<8} | Students: {c.len:<5}")
             pause()
 
         elif option == 3:                # VIEW TEACHER
@@ -438,7 +517,7 @@ def main():
             print("[ VIEW TEACHER ]")
             teachers = dm.load_teacher()
             for t in teachers:
-                print(f"  {t.teacher_id} | {t.name} | {t.subject} | Salary: {t.salary}")
+                print(f"  {t.person_id} | {t.name:<30} | {t.subject:<20} | Salary: ${t.salary:<10}")
             pause()
 
         elif option == 4:                # GENERATE REPORT

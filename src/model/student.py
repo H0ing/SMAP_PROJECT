@@ -62,12 +62,18 @@ class Student(Person):
         
     def add_score(self, subject, score):
         try:
-            if subject not in self._scores.keys():
+            if subject not in SUBJECTS:
                 raise ValueError(f"Unknown subject: {subject}")
-            if not (0<= score <=100):
-                raise ValueError(f"Score must be 0-100, got {score}") 
-            self._scores[subject].append(round(float(score),1))
+            if not (0 <= score <= 100):
+                raise ValueError(f"Score must be 0-100, got {score}")
+
+            # initialize subject list if student has no score for it yet
+            if subject not in self._scores:
+                self._scores[subject] = []
+
+            self._scores[subject].append(round(float(score), 1))
             print(f"Score added: {self.person_id} | {subject} | {score}")
+
         except ValueError as e:
             print(f"Add score failed: {e}")
         finally:

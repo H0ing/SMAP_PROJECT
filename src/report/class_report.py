@@ -50,6 +50,8 @@ class ClassReport(Report):
         if not self._lines:
             self.generate_report()
         return "\n".join(self._lines)
+    
+    
     def save_to_file(self):
         class_id = self._classroom.class_id
         class_level = self._classroom.class_level
