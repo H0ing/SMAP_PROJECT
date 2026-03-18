@@ -308,10 +308,118 @@ class DataManager:
 
         print(f"Saved to: {save_path}")
         
-    def generate_annaul_report():
-        pass
-    
-    
+    def generate_annaul_report(self):
+        import matplotlib
+        matplotlib.use('Agg') 
+        import matplotlib.pyplot as plt
+        import os
+       
+        classrooms=self.load_classroom()
+        if not classrooms:
+            print("No classrooms found.")
+            return
+        all_students=[s for c in classrooms for s in c.students]
+        if not all_students:
+            print("No student found.")
+            return
+        subjects = list(all_students[0].scores.keys()) if all_students else []
+        active_classes = [c for c in classrooms if c.students]
+            # Chart 1: group classes by year, find highest avg class per year
+        from collections import defaultdict
+        classes_by_year = defaultdict(list)
+        for c in active_classes:
+            classes_by_year[c._year].append(c)
+
+        year_labels    = []   # x axis — each year
+        top_class_avgs = []   # y axis — highest class avg that year
+        top_class_ids  = []   # label — which class was the best
+        for year,classes in sorted(classes_by_year.items()):
+            best=max(classes,key=lambda c: c.class_average())
+            year_labels.append(year)
+            top_class_avgs.append(best.class_average())
+            top_class_ids.append(best.class_id)
+        # chart 2 top performer per class
+        top_scores = []
+        top_labels = []
+        for c in active_classes:
+            top = max(c.students,key=lambda s:s.overall_average())
+            top_scores.append(top.overall_average())
+            top_labels.append(f"{c.class_id}-{top.name}")
+        #chart 3 grade distribution school-wide
+        grade_labels = ["A", "B", "C", "D", "E", "F"]
+        grade_counts = {g: 0 for g in grade_labels}
+        for s in all_students:
+            grade_counts[s.grade_letter()] += 1
+        
+        #implement and figure all plots
+        fig, axs = plt.subplots(3,1, figsize=(12,18))
+        fig.suptitle("Annual School Report — 2024/2025", fontsize=15, fontweight="bold")
+        #chart 1 highest class per year
+        axs[0].bar(year_labels, top_class_avgs,
+               color=[self._score_color(v) for v in top_class_avgs])
+        axs[0].set_ylim(0, 100)
+        axs[0].set_title("Highest Performing Class per Year")
+        axs[0].set_ylabel("Average Score")
+        axs[0].axhline(y=50, color="red", linestyle="--", label="Pass Mark")
+        axs[0].legend()
+        # Label each bar with class ID and score
+        for i, (v, cid) in enumerate(zip(top_class_avgs, top_class_ids)):
+            axs[0].text(i, v + 1, f"{cid}\n{v:.1f}", ha="center", fontsize=9, fontweight="bold")
+        # ── Chart 2: Top performer per class (horizontal bar) ─────────────────
+        axs[1].barh(range(len(top_labels)), top_scores,
+                    color=[self._score_color(v) for v in top_scores])
+        axs[1].set_yticks(range(len(top_labels)))
+        axs[1].set_yticklabels(top_labels, fontsize=9)
+        axs[1].invert_yaxis()
+        axs[1].axvline(x=50, color="red",   linestyle="--", label="Pass Mark")
+        axs[1].axvline(x=70, color="green", linestyle=":",  label="Good (70)")
+        axs[1].set_xlim(0, 100)
+        axs[1].set_title("Top Performer per Class")
+        axs[1].set_xlabel("Overall Average Score")
+        axs[1].legend()
+        for i, v in enumerate(top_scores):
+            axs[1].text(v + 1, i, f"{v:.1f}", va="center", fontsize=8, fontweight="bold")
+
+        # ── Chart 3: Grade distribution (vertical bar) ────────────────────────
+        counts     = [grade_counts[g] for g in grade_labels]
+        grd_colors = ["#2ecc71", "#27ae60", "#f1c40f", "#e67e22", "#e74c3c", "#c0392b"]
+        axs[2].bar(grade_labels, counts, color=grd_colors)
+        axs[2].set_title("School-wide Grade Distribution")
+        axs[2].set_ylabel("Number of Students")
+        for i, c in enumerate(counts):
+            if c > 0:
+                axs[2].text(i, c + 0.1, str(c), ha="center", fontsize=9, fontweight="bold")
+        # check student make sure graph is corrected by meng seang
+        # total = 0
+        # for c in classrooms:
+        #     print(f"\n--- {c.class_id} ({len(c.students)} students) ---")
+        #     print(f"  {'ID':<10} {'Name':<22} {'Avg':>6} {'Grade'}")
+        #     print(f"  {'-'*45}")
+        #     for s in c.students:
+        #         avg = s.overall_average()
+        #         grade = s.grade_letter()
+        #         print(f"  {s.person_id:<10} {s.name:<22} {avg:>6.1f} {grade}")
+        #     total += len(c.students)       
+        # print(f"\n{'='*45}")
+        # print(f"Total: {total} students across {len(classrooms)} classes")
+        plt.tight_layout()
+        return self._save_plot(plt, "annual", "annual_report.png") 
+    def _score_color(self, value):
+        if value >= 70:
+            return "green"
+        elif value >= 50:
+            return "orange"
+        return "red"      
+    def _save_plot(self, plt, folder, filename):
+        import os
+        save_dir = os.path.join("outputs", "graphs", folder)
+        os.makedirs(save_dir, exist_ok=True)
+        path = os.path.join(save_dir, filename)
+        plt.savefig(path, dpi=300, bbox_inches="tight")
+        plt.close()
+        print(f"Saved to: {path}")
+        return path     
+        
 if __name__ == "__main__":
     dm = DataManager("./data")
 
@@ -346,6 +454,7 @@ if __name__ == "__main__":
         print(i.scores)
 
     dm.generate_class_report_plot("C1A")
+    dm.generate_annaul_report()
 
 
     
