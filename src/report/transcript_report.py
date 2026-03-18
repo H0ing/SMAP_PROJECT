@@ -1,7 +1,7 @@
 from core.report import Report
 from model.student import Student, SUBJECTS, PASS_MARK
 class TranscriptReport(Report):
-    def __init__(self,student : Student):
+    def __init__(self,student , ):
         super().__init__(f"Transcript - {student.name}")
         self._student=student
         self._lines=[]
@@ -31,10 +31,10 @@ class TranscriptReport(Report):
             status="PASS" if avg>= PASS_MARK else "FAIL"
             self._lines.append(f"  {subject:<12} {avg:>8} {grade:>6} {status:>9}")
         fail_sub=s.failing_subjects()
-        overall_avg = s.overall_average()
+        overall_avg = s.overall_average()  
         self._lines += [
-            "  "+line,
-            f"  Overall Average : {overall_avg:.2f}",
+            "  " + line,
+            f"  Overall Average : {overall_avg:.2f}",   
             f"  Final Grade     : {s.grade_letter()}",
             f"  Result          : {'PASSED' if s.is_passing() else 'FAILED'}",
         ]
@@ -49,6 +49,29 @@ class TranscriptReport(Report):
             self.generate_report()
         with open(filepath, "w") as f:
             f.write("\n".join(self._lines))
+
+if __name__ == "__main__":
+    s = Student(
+        name="Devit",
+        person_id="S001",
+        class_id="A1",
+        sex="M",
+        dob="2005-01-01",
+        email="devit@test.com",
+        attendance=90
+    )
+    s.scores = {
+        "Math": [80, 90],
+        "English": [70, 75],
+        "Physics": [50, 60]
+    }
+    rpt = TranscriptReport(s)
+    rpt.generate_report()
+    print(rpt.content_report())
+    rpt.save_to_file("transcript_test.txt")
+    print("File saved as transcript_test.txt")
+    
+    
     
     
 

@@ -57,7 +57,7 @@ class Teacher(Person):
     @classmethod
     def from_dict(cls, data):
         return cls(
-            name=data["name"],
+            name=data["teacher_name"],
             teacher_id=data["teacher_id"],
             sex=data["sex"],
             subject=data["subject"],
