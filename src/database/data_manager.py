@@ -73,7 +73,7 @@ class DataManager:
             with open(self.students_file, "r") as f:
                 reader = csv.DictReader(f)
                 for row in reader:
-                    row["attendance"] = int(row["attendance"])
+                    row["attendance"] = float(row["attendance"])
                     row["scores"] = scores_container.get(row["student_id"], {})
                     students.append(Student.from_dict(row))
         except FileNotFoundError:
@@ -224,7 +224,7 @@ class DataManager:
     
     
 if __name__ == "__main__":
-    dm = DataManager(".\data")
+    dm = DataManager("./data")
 
     print("\n--- LOAD STUDENTS ---")
     students = dm.load_student()
@@ -242,7 +242,7 @@ if __name__ == "__main__":
         print(f"Class: {c.class_id}, Students: {c.len}")
 
     print("\n--- GENERATE REPORT ---")
-    report = dm.generate_report("10A")
+    report = dm.generate_report("C1A")
     print(report)
 
     print("\n--- FIND STUDENT ---")

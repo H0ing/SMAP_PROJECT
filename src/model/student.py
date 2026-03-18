@@ -14,16 +14,13 @@ PASS_MARK = 50.0
 
 
 class Student(Person):
-    def __init__(self, name, person_id, sex, dob, email, class_id, attendance=0, scores = None):
+    def __init__(self, name, person_id, sex, dob, email, class_id, attendance=0, scores = []):
         super().__init__(name, person_id, sex)
         self._class_id=class_id
         self._dob=dob
         self._email=email
         self._attendance=attendance
-        if scores is None:
-            self._scores = {s: [] for s in SUBJECTS}
-        else:
-            self._scores = {s: scores.get(s, []) for s in SUBJECTS}
+        self._scores = scores
     @property
     def class_id(self): return self._class_id
     @class_id.setter
@@ -56,7 +53,9 @@ class Student(Person):
     @property
     def scores(self): 
         return self._scores
-
+    @scores.setter
+    def scores(self, new_scores):
+        self._scores = new_scores
     def add_score(self, subject, score):
         try:
             if subject not in self._scores.keys():
