@@ -21,7 +21,7 @@ class ClassReport(Report):
 
         self._lines = [
             sep,
-            f"       CLASS REPORT — {cls.class_id} - {cls.class_level}",
+            f"       CLASS REPORT - {cls.class_id} - {cls.class_level}",
             f"       Academic Year {cls._year}",
             sep,
             f"  Total Students  : {cls.len}",
