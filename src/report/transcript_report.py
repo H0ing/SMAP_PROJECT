@@ -83,6 +83,8 @@ if __name__ == "__main__":
     rpt = TranscriptReport(s)
     rpt.generate_report()
     print(rpt.content_report())
+    rpt.save_to_file("transcript_test.txt")
+    print("File saved as transcript_test.txt")
     rpt.save_to_file()
     
     

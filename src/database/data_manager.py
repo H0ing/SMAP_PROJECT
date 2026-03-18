@@ -295,8 +295,70 @@ class DataManager:
         save_path = os.path.join(save_dir, f"class_report_{class_id}.png")
         plt.savefig(save_path, dpi=300)
         print(f"Saved to: {save_path}")
+<<<<<<< HEAD
  
     def generate_annaul_report_plot(self, year=None):
+=======
+        
+    def generate_transcript_plot(self, student_id):
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+        import numpy as np
+        import os
+        
+        student = self.get_student(student_id)
+        if student == None:
+            print(f"Not found student {student_id}")
+            return
+        subjects = list(student.scores.keys())
+        start_month = 1
+        end_month = len(student.scores[subjects[0]]) 
+        months = list(range(start_month, end_month + 1))
+        data = {}
+        for subject in subjects:
+            data[subject] = student.scores[subject]
+        
+        fig, axs = plt.subplots(1, 2, figsize=(16, 6))
+        
+        #plot line chart
+        for subject, scores in data.items():
+            axs[0].plot(months, scores, marker = 'o', label=subject)
+        axs[0].set_title(f"Monthly Trend — {student.name}")
+        axs[0].set_xlabel("Month")
+        axs[0].set_ylabel("Score")
+        axs[0].set_xticks(months)
+        axs[0].set_ylim(0, 100)
+        axs[0].grid(True)
+        axs[0].legend()
+        
+        #plot bar chart
+        month_avg = []
+        for i in range(len(months)):
+            month_scores = [data[s][i] for s in subjects]
+            avg = np.mean(month_scores)
+            month_avg.append(avg)
+        # Plot bar chart
+        axs[1].bar(months, month_avg)
+        axs[1].set_title(f"Monthly Average — {student.name}")
+        axs[1].set_xlabel("Month")
+        axs[1].set_ylabel("Average Score")
+        axs[1].set_ylim(0, 100)
+        axs[1].set_xticks(months)
+        #save
+        save_dir = os.path.join("outputs", "graphs", "transcript")
+        os.makedirs(save_dir, exist_ok=True)
+        file_name = f"transcript_{student_id}.png"
+        save_path = os.path.join(save_dir, file_name)
+        plt.savefig(save_path, dpi=300)
+        plt.close()
+        print(f"Saved to: {save_path}")
+        
+        
+               
+
+    def generate_annaul_report(self):
+>>>>>>> 4d0beb609792109b065f77e6b040360b51ba3961
         import matplotlib
         matplotlib.use('Agg')
         import matplotlib.pyplot as plt
@@ -436,8 +498,22 @@ if __name__ == "__main__":
     for i in find_student_in_class:
         print(i.scores)
 
+<<<<<<< HEAD
     dm.generate_class_report_plot("CLS0482")
     dm.generate_annaul_report_plot("2020-2021")
+=======
+    dm.generate_class_report_plot("C1A")
+    print("\n--- TEST LINE GRAPH ---")
+    student = dm.get_student("S0002")
+    if student:
+        print(f"Found student: {student.name}")
+        print(f"Subjects: {list(student.scores.keys())}")
+        print(f"Score count per subject: {len(list(student.scores.values())[0])}")
+        dm.generate_transcript_plot("S0002")
+    else:
+        print("Student not found — check the ID")
+    dm.generate_annaul_report()
+>>>>>>> 4d0beb609792109b065f77e6b040360b51ba3961
 
 
     
