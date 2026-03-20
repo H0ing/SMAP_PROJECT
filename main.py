@@ -4,6 +4,7 @@ from model.student import Student, SUBJECTS
 from report.class_report import ClassReport
 from report.transcript_report import TranscriptReport
 from report.annual import Annual
+from datetime import datetime
 
 dm = DataManager("./data")
 
@@ -131,7 +132,7 @@ def view_student():
                 print_student(s)
 
     elif choice == "2":
-        sid = input("  Enter Student ID: ").strip()
+        sid = input("  Enter Student ID: ").strip().upper()
         student = dm.get_student(sid)
         if student:
             print_student(student)
@@ -149,7 +150,7 @@ def view_student():
             print(f"  No student found with name containing: '{name}'")
 
     elif choice == "4":
-        class_id = input("  Enter Class ID: ").strip()
+        class_id = input("  Enter Class ID: ").strip().upper()
         results = dm.find_students_by_class(class_id)
         if results:
             print(f"\n  Found {len(results)} student(s) in class {class_id}:")
@@ -171,13 +172,34 @@ def add_student():
     print("  ADD STUDENT")
     print("=" * 40)
 
-    student_id   = input("  Student ID            : ").strip()
+    student_id   = input("  Student ID            : ").strip().upper()
     student_name = input("  Full Name             : ").strip()
-    class_id     = input("  Class ID              : ").strip()
-    sex          = input("  Sex (M/F)             : ").strip()
-    dob          = input("  Date of Birth (YYYY-MM-DD): ").strip()
-    email        = input("  Email                 : ").strip()
+    class_id     = input("  Class ID              : ").strip().upper()
+    while True:
+        sex = input("  Sex (M/F)             : ").strip().upper()
+        if sex in ["M", "F"]:
+            break
+        else:
+            print("  Invalid input. Please enter M or F.")
+    while True:
+        dob = input("  Date of Birth (YYYY-MM-DD): ").strip()
+        try:
+            dob_date = datetime.strptime(dob, "%Y-%m-%d")
+            if dob_date >= datetime.now():
+                print("  DOB must be in the past.")
+                continue
 
+            break
+        except ValueError:
+            print("  Invalid format. Please use YYYY-MM-DD and valid date.")
+    while True:
+        email = input("  Email                 : ").strip()
+        if ("@" in email and "." in email and
+            email.index("@") < email.rindex(".") and
+            not email.startswith("@") and
+            not email.endswith(".")):
+            break
+        print("  Invalid email format. Try again.")
     while True:
         attendance_input = input("  Attendance %          : ").strip()
         try:
@@ -213,7 +235,7 @@ def update_student():
     print("  UPDATE STUDENT")
     print("=" * 40)
 
-    student_id = input("  Enter Student ID to update: ").strip()
+    student_id = input("  Enter Student ID to update: ").strip().upper()
     student = dm.get_student(student_id)
 
     if not student:
@@ -241,13 +263,40 @@ def update_student():
 
     field, label = UPDATE_FIELDS[choice]
     new_value = input(f"  New {label}: ").strip()
+    if field == "sex":
+        new_value = new_value.upper()
+        if new_value not in ["M", "F"]:
+            print("  Invalid input. Please enter M or F.")
+            return
 
-    if field == "attendance":
+    elif field == "dob":
+        try:
+            dob_date = datetime.strptime(new_value, "%Y-%m-%d")
+            if dob_date >= datetime.now():
+                print("  DOB must be in the past.")
+                return
+        except ValueError:
+            print("  Invalid format. Use YYYY-MM-DD.")
+            return
+
+    elif field == "email":
+        if not ("@" in new_value and "." in new_value and
+                new_value.index("@") < new_value.rindex(".") and
+                not new_value.startswith("@") and
+                not new_value.endswith(".")):
+            print("  Invalid email format.")
+            return
+    elif field == "attendance":
         try:
             new_value = float(new_value)
+            if not (0 <= new_value <= 100):
+                print("  Attendance must be between 0 and 100.")
+                return
         except ValueError:
-            print("  Invalid input. Attendance must be a number.")
+            print("  Attendance must be a number.")
             return
+    elif field == "class_id":
+        new_value = new_value.upper()
 
     success = dm.update_student(student_id, {field: new_value})
 
@@ -269,7 +318,7 @@ def delete_student():
     print("  DELETE STUDENT")
     print("=" * 40)
 
-    student_id = input("  Enter Student ID to delete: ").strip()
+    student_id = input("  Enter Student ID to delete: ").strip().upper()
     student = dm.get_student(student_id)
 
     if not student:
@@ -300,7 +349,7 @@ def add_score_student():
     print("  ADD SCORE")
     print("=" * 40)
 
-    student_id = input("  Enter Student ID: ").strip()
+    student_id = input("  Enter Student ID: ").strip().upper()
     student = dm.get_student(student_id)
 
     if not student:
@@ -394,12 +443,15 @@ def handle_generate_report():
 
         elif option == 1:                # TRANSCRIPT REPORT
             clear_screen()
-            student_id = input("  Enter Student ID: ").strip()
+            student_id = input("  Enter Student ID: ").strip().upper()
             student = dm.get_student(student_id)
             if not student:
                 print(f"  No student found with ID: {student_id}")
             else:
-                report = TranscriptReport(student)
+                class_id = student.class_id
+                classroom = dm.get_classroom(class_id)
+                year = classroom.year
+                report = TranscriptReport(student, year)
                 report.generate_report()
                 print(report.content_report())
                 if input("\n  Save to file? (y/n): ").strip().lower() == "y":
@@ -407,7 +459,7 @@ def handle_generate_report():
 
         elif option == 2:                # CLASS REPORT
             clear_screen()
-            class_id = input("  Enter Class ID: ").strip()
+            class_id = input("  Enter Class ID: ").strip().upper()
             classroom = dm.get_classroom(class_id)
             if not classroom:
                 print(f"  No classroom found with ID: {class_id}")
@@ -458,13 +510,13 @@ def handle_generate_graph():
 
         elif option == 1:                # GRAPH TRANSCRIPT REPORT
             clear_screen()
-            student_id = input("  Enter Student ID: ").strip()
+            student_id = input("  Enter Student ID: ").strip().upper()
             print(f"  Generating transcript graph for {student_id}...")
             dm.generate_transcript_plot(student_id)
 
         elif option == 2:                # GRAPH CLASS REPORT
             clear_screen()
-            class_id = input("  Enter Class ID: ").strip()
+            class_id = input("  Enter Class ID: ").strip().upper()
             print(f"  Generating graph for class {class_id}...")
             dm.generate_class_report_plot(class_id)
 

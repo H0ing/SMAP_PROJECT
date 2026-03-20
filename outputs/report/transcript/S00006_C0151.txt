@@ -1,0 +1,24 @@
+==================================================
+        OFFICIAL STUDENT TRANSCRIPT
+        Academic Year 2024-2025
+==================================================
+ Name          : Pov Oudom
+ Student ID    : S00006
+ Class         : C0151
+ Sex           : M
+ Date of Birth : 2006-12-24
+ Email         : pov.oudom6@school.edu.kh
+ Attendance    : 95.8%
+==================================================
+  Subject          Avg       Grade  Status
+  ---------------------------------------------
+  math             71.1      C      PASS
+  physics          74.1      C      PASS
+  chemistry        59.7      E      PASS
+  biology          65.9      D      PASS
+  history          63.5      D      PASS
+  literature       71.5      C      PASS
+  ---------------------------------------------
+  Overall Average : 67.60
+  Final Grade     : D
+  Result          : PASSED

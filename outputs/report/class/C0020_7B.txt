@@ -1,0 +1,30 @@
+============================================================
+       CLASS REPORT - C0020 - 7B
+       Academic Year 2022-2023
+============================================================
+  Total Students  : 9
+  Class Average   : 65.56
+  Pass Rate       : 100.0%
+  Failing Students: 0
+============================================================
+  SUBJECT AVERAGES
+  -----------------------------------
+  math             63.7  
+  physics          64.9  
+  chemistry        65.8  
+  biology          67.1  
+  history          67.8  
+  literature       64.1  
+============================================================
+  STUDENT RANKING (Top to Bottom)
+  --------------------------------------------------
+    1. Sok Pisey              70.4    C  Pass
+    2. Pen Chenda             68.4    D  Pass
+    3. Kong Kalyana           67.2    D  Pass
+    4. Yem Chhay              66.0    D  Pass
+    5. Sam Ratanak            65.6    D  Pass
+    6. Chum Vanna             64.9    D  Pass
+    7. Lim Chantrea           64.7    D  Pass
+    8. Kong Sithen            61.4    D  Pass
+    9. Heng Rithy             61.4    D  Pass
+============================================================

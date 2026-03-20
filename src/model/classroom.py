@@ -33,7 +33,8 @@ class Classroom:
     @property
     def students(self):
         return self._students
-
+    @property
+    def year(self): return self._year
     # add student
     def add_student(self, student):
         if not isinstance(student, Student):
