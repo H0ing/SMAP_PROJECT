@@ -1,0 +1,24 @@
+==================================================
+        OFFICIAL STUDENT TRANSCRIPT
+        Academic Year 2024-2025
+==================================================
+ Name          : Pich Chanmoly
+ Student ID    : S00020
+ Class         : C0268
+ Sex           : F
+ Date of Birth : 2010-03-15
+ Email         : pich.chanmoly20@school.edu.kh
+ Attendance    : 76.7%
+==================================================
+  Subject          Avg       Grade  Status
+  ---------------------------------------------
+  math             67.8      D      PASS
+  physics          73.4      C      PASS
+  chemistry        60.9      D      PASS
+  biology          68.5      D      PASS
+  history          63.6      D      PASS
+  literature       71.4      C      PASS
+  ---------------------------------------------
+  Overall Average : 67.60
+  Final Grade     : D
+  Result          : PASSED

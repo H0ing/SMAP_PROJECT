@@ -1,0 +1,38 @@
+============================================================
+       CLASS REPORT - C0017 - 11B
+       Academic Year 2023-2024
+============================================================
+  Total Students  : 17
+  Class Average   : 63.93
+  Pass Rate       : 100.0%
+  Failing Students: 0
+============================================================
+  SUBJECT AVERAGES
+  -----------------------------------
+  math             66.8  
+  physics          62.2  
+  chemistry        64.1  
+  biology          63.0  
+  history          63.4  
+  literature       64.1  
+============================================================
+  STUDENT RANKING (Top to Bottom)
+  --------------------------------------------------
+    1. Ros Makara             67.3    D  Pass
+    2. Lim Sokunthy           67.3    D  Pass
+    3. Tith Menghour          67.2    D  Pass
+    4. Sok Bunna              67.1    D  Pass
+    5. Hor Pichda             66.4    D  Pass
+    6. Mao Dara               65.7    D  Pass
+    7. Keo Oudom              64.8    D  Pass
+    8. Tan Meas               64.1    D  Pass
+    9. Tep Meas               63.9    D  Pass
+   10. Sar Malinda            63.7    D  Pass
+   11. Mao Mony               63.5    D  Pass
+   12. Bun Chenda             63.3    D  Pass
+   13. Tan Chetra             62.8    D  Pass
+   14. Hor Kolab              60.7    D  Pass
+   15. Noun Sokha             60.3    D  Pass
+   16. Sok Kosal              60.2    D  Pass
+   17. Hon Vichara            58.5    E  Pass
+============================================================

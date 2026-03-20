@@ -1,5 +1,5 @@
 student_id,student_name,class_id,sex,dob,email,attendance
-S00001,Hor Vichara,C0018,F,2025,hor.vichear,95.5
+S00001,Hon Vichara,C0017,M,2012-12-12,hon.vichara@gmail.com,94.4
 S00002,Kruy Sreyleak,C0476,F,2007-02-14,kruy.sreyleak2@school.edu.kh,72.7
 S00003,Em Chantrea,C0215,F,2011-09-21,em.chantrea3@school.edu.kh,93.2
 S00004,Sar Kolab,C0036,F,2008-08-06,sar.kolab4@school.edu.kh,91.1
@@ -4998,4 +4998,4 @@ S04996,Ly Sopheap,C0343,F,2012-03-30,ly.sopheap4996@school.edu.kh,96.3
 S04997,Keo Sokunthea,C0114,F,2014-01-06,keo.sokunthea4997@school.edu.kh,83.7
 S04998,Ros Dara,C0081,F,2007-11-30,ros.dara4998@school.edu.kh,84.1
 S04999,Chim Sreynich,C0308,F,2009-03-04,chim.sreynich4999@school.edu.kh,73.3
-S05000,Ly Lyda,C0155,M,2010-11-08,ly.lyda5000@school.edu.kh,93.1
+S05000,Ly Lyya,C0018,M,2012-12-01,ly.lyya5000@school.edu.kh,94.0

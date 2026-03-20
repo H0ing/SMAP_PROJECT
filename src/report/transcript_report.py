@@ -3,9 +3,10 @@ from model.student import Student, SUBJECTS, PASS_MARK
 import os
 
 class TranscriptReport(Report):
-    def __init__(self,student , ):
+    def __init__(self,student , year):
         super().__init__(f"Transcript - {student.name}")
         self._student=student
+        self._year = year
         self._lines=[]
     def generate_report(self):
         s=self._student
@@ -14,7 +15,7 @@ class TranscriptReport(Report):
         self._lines=[
             sep,
             "        OFFICIAL STUDENT TRANSCRIPT",
-            "        Academic Year 2024-2025",
+            f"        Academic Year {self._year}",
             sep,
             f" Name          : {s.name}",
             f" Student ID    : {s.person_id}",
