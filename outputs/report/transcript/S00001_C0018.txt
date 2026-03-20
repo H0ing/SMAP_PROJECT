@@ -1,0 +1,24 @@
+==================================================
+        OFFICIAL STUDENT TRANSCRIPT
+        Academic Year 2024-2025
+==================================================
+ Name          : Hor Vichara
+ Student ID    : S00001
+ Class         : C0018
+ Sex           : F
+ Date of Birth : 2025
+ Email         : hor.vichear
+ Attendance    : 95.5%
+==================================================
+  Subject          Avg       Grade  Status
+  ---------------------------------------------
+  math             63.8      D      PASS
+  physics          56.8      E      PASS
+  chemistry        56.8      E      PASS
+  biology          55.1      E      PASS
+  history          62.6      D      PASS
+  literature       56.0      E      PASS
+  ---------------------------------------------
+  Overall Average : 58.50
+  Final Grade     : E
+  Result          : PASSED

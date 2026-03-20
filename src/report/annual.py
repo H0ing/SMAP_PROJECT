@@ -1,29 +1,41 @@
 from core.report import Report
+from collections import defaultdict
 from model.student import Student
 from model.classroom import Classroom
 import os
 
 class Annual(Report):
-    def __init__(self, classrooms):
-        super().__init__("Annual School Report 2024–2025")
+
+    def __init__(self, classrooms, year=None):
         self._classrooms = classrooms
+        self._year       = year
+
+        years      = sorted(set(c._year for c in self._classrooms if c._year))
+        year_label = ", ".join(years) if years else "N/A"
+        super().__init__(f"Annual School Report - {year_label}")
         self._lines = []
 
     def generate_report(self):
-        sep = "=" * 60
+        if not self._classrooms:
+            print("  No classrooms found for the selected year.")
+            return
 
-        # Collect all unique years from all classrooms
-        years = sorted(set(c._year for c in self._classrooms if c._year))
+        sep          = "=" * 60
+        all_students = [s for c in self._classrooms for s in c.students]
+
+        if not all_students:
+            print("  No students found for the selected year.")
+            return
+        total        = len(all_students)
+        passed       = sum(1 for s in all_students if s.is_passing())
+        overall      = round(sum(s.overall_average() for s in all_students) / total, 2) if total else 0
+
+        years      = sorted(set(c._year for c in self._classrooms if c._year))
         year_label = ", ".join(years) if years else "N/A"
-
-        all_students = [s for cls in self._classrooms for s in cls.students]
-        total  = len(all_students)
-        passed = sum(1 for s in all_students if s.is_passing())
-        overall = round(sum(s.overall_average() for s in all_students) / total, 2) if total else 0
 
         self._lines = [
             sep,
-            f"       ANNUAL SCHOOL REPORT — {year_label}",  # shows all years
+            f"       ANNUAL SCHOOL REPORT - {year_label}",
             sep,
             f"  Total Students  : {total}",
             f"  Passed          : {passed}  ({passed / total * 100:.1f}%)" if total else "  Passed: 0",
@@ -35,28 +47,25 @@ class Annual(Report):
             "  " + "-" * 58,
         ]
 
-        for cls in self._classrooms:
-            if not cls.students:
+        for c in self._classrooms:
+            if not c.students:
                 continue
-            # Bug 1 fixed: max() needs a key, otherwise it uses __lt__ which may not exist
-            top = max(cls.students, key=lambda s: s.overall_average())
+            top = max(c.students, key=lambda s: s.overall_average())
             self._lines.append(
-                f"  {cls.class_id:<8} {len(cls.students):>9} "
-                f"{cls.class_average():>7.1f} {cls.pass_rate():>6.1f}% "
+                f"  {c.class_id:<8} {len(c.students):>9} "
+                f"{c.class_average():>7.1f} {c.pass_rate():>6.1f}% "
                 f"  {top.name:<22} ({top.overall_average():.1f})"
             )
 
-        # Grade distribution across all students
-        grade_dist: dict[str, int] = {}
+        grade_dist = {}
         for s in all_students:
             g = s.grade_letter()
             grade_dist[g] = grade_dist.get(g, 0) + 1
 
         self._lines += [sep, "  GRADE DISTRIBUTION", "  " + "-" * 35]
-
         for grade in ["A", "B", "C", "D", "E", "F"]:
             count = grade_dist.get(grade, 0)
-            self._lines.append(f"  {grade:<4}  {count:>3} ")
+            self._lines.append(f"  {grade:<4}  {count:>3}")
 
         self._lines.append(sep)
         return "\n".join(self._lines)
@@ -64,22 +73,23 @@ class Annual(Report):
     def content_report(self):
         if not self._lines:
             self.generate_report()
+        if not self._lines:
+            return ""
         return "\n".join(self._lines)
 
     def save_to_file(self):
-        base_dir     = os.path.dirname(os.path.abspath(__file__))       # .../src/report
+        years      = sorted(set(c._year for c in self._classrooms if c._year))
+        year_label = "_".join(y.replace("-", "_") for y in years) if years else "unknown"
+
+        base_dir     = os.path.dirname(os.path.abspath(__file__))      # .../src/report
         project_root = os.path.dirname(os.path.dirname(base_dir))       # .../SMAP_DEVELOP
-        file_path    = os.path.join(
-            project_root, "outputs", "report", "annual",
-            "annual_report_2024_2025.txt"
-        )
- 
+        file_path    = os.path.join(project_root, "outputs", "report", "annual", f"annual_report_{year_label}.txt")
+
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
- 
-        with open(file_path, "w") as f:
+
+        with open(file_path, "w", encoding="utf-8") as f:
             f.write(self.content_report())
- 
-        print(f"Annual Report saved → {file_path}")
+        print(f"Annual Report saved to: {file_path}")
 
 
 if __name__ == '__main__':

@@ -16,6 +16,11 @@ class Classroom:
         return self._class_id
     
     @property
+    def room(self):
+        return self._room
+
+
+    @property
     def class_level(self):
         return self._class_level
 
