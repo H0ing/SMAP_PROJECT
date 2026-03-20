@@ -1,0 +1,34 @@
+============================================================
+       CLASS REPORT - C0001 - 12A
+       Academic Year 2022-2023
+============================================================
+  Total Students  : 13
+  Class Average   : 64.52
+  Pass Rate       : 100.0%
+  Failing Students: 0
+============================================================
+  SUBJECT AVERAGES
+  -----------------------------------
+  math             67.3  
+  physics          65.3  
+  chemistry        63.7  
+  biology          62.6  
+  history          63.8  
+  literature       64.4  
+============================================================
+  STUDENT RANKING (Top to Bottom)
+  --------------------------------------------------
+    1. Ros Sithen             69.2    D  Pass
+    2. Men Malinda            68.6    D  Pass
+    3. Vong Malinda           66.0    D  Pass
+    4. Sar Meas               65.6    D  Pass
+    5. Seng Sovanrath         65.4    D  Pass
+    6. Nget Kunthea           64.4    D  Pass
+    7. Seng Chanmoly          64.3    D  Pass
+    8. Chan Seyha             64.1    D  Pass
+    9. Nhem Dara              63.5    D  Pass
+   10. Pov Virak              63.5    D  Pass
+   11. Huy Dara               62.7    D  Pass
+   12. Duch Sithen            61.4    D  Pass
+   13. Chhun Sreynich         60.0    D  Pass
+============================================================

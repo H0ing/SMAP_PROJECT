@@ -1,13 +1,12 @@
 from core.person import Person
 
 SUBJECTS = (
-    "Math",
-    "Physics",
-    "Chemistry",
-    "Biology",
-    "History",
-    "Literature",
-    "English",
+    "math",
+    "physics",
+    "chemistry",
+    "biology",
+    "history",
+    "literature",
 )
 CLASS_LEVELS = ("10A", "10B", "11A", "11B", "12A", "12B")
 PASS_MARK = 50.0
@@ -32,6 +31,9 @@ class Student(Person):
         self._class_id=new_class_id
     @property
     def attendance(self): return self._attendance
+    @attendance.setter
+    def attendance(self, new_attendance): 
+        self._attendance = new_attendance
     @property
     def dob(self):
         return self._dob
@@ -150,3 +152,6 @@ class Student(Person):
             attendance=data.get('attendance', 0),
             scores= data.get('scores', {})
         )
+        
+    def __lt__(self, other):
+        return self.overall_average() < other.overall_average()
